@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Al Khatib Glossar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Anaheim&family=Karla&display=swap');
+
+        :root {
+            --blue-dark: #252640;
+            --blue-light: #434F73;
+            --grey-dark: #262522;
+            --grey-med: #8C8984;
+            --grey-light: #BFBEBA;
+        }
+
+        body {
+            overflow: hidden;
+            margin: 0px;
+            font-family: 'Anaheim', sans-serif;
+            font-size: 15px;
+            color: var(--grey-dark);
+        }
+
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            z-index: 100;
+            display: block;
+            color: #ffff00;
+        }
+
+        /* Landing Page */
+        #landing {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-image: url("landing-background1080.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center center;
+            display: flex;
+        }
+
+        .inner-landing {
+            display: flex;
+        }
+
+        .site-title {
+            font-family: 'Karla', sans-serif;
+            font-style: italic;
+            color: var(--blue-dark);
+            font-size: 2.5em;
+        }
+
+        .white-fade-bg {
+            background-color: rgba(255, 255, 255, .32);
+        }
+
+        /* INFO OVERLAY */
+        #overlay-outer {
+            position: fixed;
+            width: 50%;
+            left: 50%;
+            height: 100%;
+            top: 0px;
+            /* padding:2em; */
+        }
+
+        #overlay-inner {
+            position: absolute;
+            top: 2em;
+            left: 2em;
+            right: 2em;
+            bottom: 2em;
+            padding: 2em;
+            background-color: rgba(255, 255, 255, .66);
+            /* width:80%;
+            margin-left:10%;
+            height:90%;
+            margin-top:5%; */
+        }
+
+        #overlay-title {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        #overlay-description {
+            font-size: 1.25em;
+            font-family: 'Karla';
+            color: var(--blue-light);
+            margin-bottom:1em;
+        }
+
+        #overlay-content {}
+
+        /* Site wide */
+        .vertical-center {
+            align-items: center;
+            justify-content: center;
+        }
+
+        .horizontal-center {
+            text-align: center;
+        }
+
+        .padded {
+            padding: 1.5em;
+        }
+
+        .padded-double {
+            padding: 3em;
+        }
+
+        .col50 {
+            flex: 50%;
+
+        }
+
+        a {
+            color: var(--blue-dark);
+        }
+    </style>
+
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.6.2/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+            {
+                "imports": {
+                    "three": "./build/three.module.js",
+                    "three/addons/": "./jsm/"
+                }
+            }
+        </script>
+</head>
+
+<body>
+
+    <div id="info">Description</div>
+    <script type="module" src="main.js"></script>
+
+
+    <!-- LANDING -->
+    <div id="landing" class="vertical-center">
+
+        <div class="inner-landing white-fade-bg vertical-center">
+
+            <div class="col50 horizontal-center ">
+
+                <span class="site-title">Al-Khatib Glossar</span>
+
+                <p style="margin:30px">another secondary title</p>
+
+                <a onclick="fadeOut(document.getElementById('landing'))" href="javascript:void(0);">Open the Map</a>
+            </div>
+
+            <div class="col50">
+                <p class="padded-double">"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+                    doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi
+                    architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
+                    aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi
+                    nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci
+                    velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat
+                    voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit
+                    laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in
+                    ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo
+                    voluptas nulla pariatur?"</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- INFO OVERLAYS -->
+    <div id="overlay-outer" style="display:none;opacity:0;">
+        <div id="overlay-inner">
+
+            <div id="overlay-title">
+
+            </div>
+
+            <div id="overlay-description">
+
+            </div>
+
+            <div id="overlay-content">
+                "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+                doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi
+                architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
+                aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi
+                nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci
+                velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat
+                voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit
+                laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in
+                ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo
+                voluptas nulla pariatur?"
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+        function showMap(hideMe) {
+
+            // const hideDiv = document.getElementById(hideMe);
+            // hideDiv.style.display = "none";
+
+            var s = document.getElementById(hideMe).style;
+            s.opacity = 1;
+            (function fade() { (s.opacity -= .1) < 0 ? s.display = "none" : setTimeout(fade, 40) })();
+
+        }
+
+        function fadeOut(element) {
+            var op = 1;  // initial opacity
+            var timer = setInterval(function () {
+                if (op <= 0.1) {
+                    clearInterval(timer);
+                    element.style.display = 'none';
+                }
+                element.style.opacity = op;
+                element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+                op -= op * 0.1;
+            }, 20);
+        }
+
+        function fadeIn(element) {
+            var op = 0.1;  // initial opacity
+            element.style.display = 'block';
+            var timer = setInterval(function () {
+                if (op >= 1) {
+                    clearInterval(timer);
+                }
+                element.style.opacity = op;
+                element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+                op += op * 0.1;
+            }, 20);
+        }
+
+
+    </script>
+</body>
+
+</html>
