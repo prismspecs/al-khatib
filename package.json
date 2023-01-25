@@ -10,9 +10,11 @@
     "watch": "vite build --watch"
   },
   "devDependencies": {
+    "lil-gui": "^0.17.0",
     "vite": "^4.0.0"
   },
   "dependencies": {
+    "stats.js": "^0.17.0",
     "three": "^0.147.0"
   }
 }
