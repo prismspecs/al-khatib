@@ -1,26 +1,30 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-// import Stats from './jsm/libs/stats.module.js'
-// import { GUI } from './jsm/libs/lil-gui.module.min.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-import { RedFormat } from 'three';
-import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
-import { degToRad } from 'three/src/math/MathUtils';
-
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { GammaCorrectionShader } from 'three/addons/shaders/GammaCorrectionShader.js';
 
+// import Stats from './jsm/libs/stats.module.js'
+// import { GUI } from './jsm/libs/lil-gui.module.min.js'
+// import { RedFormat } from 'three';
+// import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
+// import { degToRad } from 'three/src/math/MathUtils';
+// import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+// ----------------------- FLAGS, OPTIONS
 THREE.ColorManagement.legacyMode = false;
 
 const scene = new THREE.Scene();
+
+
+// ----------------------- CAMERA
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, .1, 10000);
 // const camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, .1, 55 );
-// camera.position.set(-5, 5, 5);
 camera.position.set(0, 0, 2);
+
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x111111);
@@ -28,23 +32,25 @@ document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
-const light = new THREE.DirectionalLight(0xffffff, .5);
-light.position.setScalar(100);
-scene.add(light);
+
+// ----------------------- LIGHTING
+const dirLight = new THREE.DirectionalLight(0xffffff, .25);
+dirLight.position.setScalar(5);  // get it away from center
+scene.add(dirLight);
+
+const ambLight = new THREE.AmbientLight(0x404040, .5); // soft white light
+scene.add(ambLight);
 
 
-// MAP
+// ----------------------- MAP
 var map = null;
-const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath('decoder/');
+
 let loader = new GLTFLoader();
-loader.setDRACOLoader(dracoLoader);
 loader.load("map-assets/map-2048.glb", function (gltf) {
 
     map = gltf.scene.children[0];
     map.position.z = 0;
     map.scale.set(5, 5, 5);
-    // map.layers.enable(0);
     scene.add(map);
     renderer.render(scene, camera)
 
@@ -56,18 +62,19 @@ loader.load("map-assets/map-2048.glb", function (gltf) {
 
 
 
+ 
 
-
-// GLYPH
-const glyphTexture = new THREE.TextureLoader().load("map-assets/glyph-test.png");
+// ----------------------- GLYPHS 
+const glyphTexture = new THREE.TextureLoader().load("map-assets/glyph-test2.png");
 // const glyphMat = new THREE.MeshPhongMaterial({ map: glyphTexture, transparent: true, emissiveIntensity: 10 });
 
-const glyphMat = new THREE.MeshStandardMaterial({
+const glyphMat = new THREE.MeshLambertMaterial({
     map: glyphTexture,
     toneMapped: false,
     emissive: "red",
     emissiveIntensity: 10,
-    transparent: true
+    transparent: true,
+    // encoding: THREE.sRGBEncoding
 });
 
 const geometry = new THREE.PlaneGeometry(.12, .12);
@@ -76,33 +83,22 @@ plane.scale.set(5, 5, 5);
 scene.add(plane);
 plane.position.set(0, 0, .2);
 
-// const light3 = new THREE.PointLight(0xff0000, 1, 100);
-// light3.position.set(.1, .1, .15);
-// scene.add(light3);
-
-// var objBack = new THREE.Mesh(new THREE.BoxGeometry(5, 5, 1), new THREE.MeshBasicMaterial({ color: "red", wireframe: false }));
-// objBack.layers.enable(1);
-// scene.add(objBack);
+// glyph light
+const glyphLight = new THREE.PointLight( 0xff0000, 1, 1 );
+glyphLight.position.set(0, 0, .2);
+scene.add(glyphLight);
 
 
 
 
 
-
-
-
-
-/** COMPOSER */
-var renderScene = new RenderPass(scene, camera)
-
-
-
+// ----------------------- COMPOSER
 const target = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
     type: THREE.HalfFloatType,
     format: THREE.RGBAFormat,
     encoding: THREE.sRGBEncoding,
 })
-target.samples = 8
+target.samples = 0; // was 8
 const composer = new EffectComposer(renderer, target)
 composer.addPass(new RenderPass(scene, camera))
 composer.addPass(new ShaderPass(GammaCorrectionShader))
