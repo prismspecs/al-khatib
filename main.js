@@ -128,13 +128,6 @@ window.addEventListener('pointermove', (e) => {
     render();
 })
 
-
-renderer.domElement.addEventListener('click', (e) => {
-
-
-
-})
-
 window.addEventListener('click', (e) => {
 
     if (e.target == renderer.domElement) {
@@ -240,12 +233,6 @@ class Glyph extends THREE.Mesh {
     }
 
     onPointerOver(e) {
-        //   this.material.color.set('hotpink')
-        //   this.material.color.convertSRGBToLinear()
-
-        // this.material.emissiveIntensity = 10;
-        // this.scale.setScalar(1.3);
-
 
         new TWEEN.Tween(this.scale)
             .to(
@@ -264,11 +251,6 @@ class Glyph extends THREE.Mesh {
     }
 
     onPointerOut(e) {
-        //   this.material.color.set('orange')
-        //   this.material.color.convertSRGBToLinear()
-
-        // this.material.emissiveIntensity = 1;
-        // this.scale.setScalar(1);
 
         new TWEEN.Tween(this.scale)
             .to(
@@ -284,14 +266,13 @@ class Glyph extends THREE.Mesh {
             .easing(TWEEN.Easing.Quadratic.InOut)
             .start();
 
-
     }
 
     onClick(e) {
 
-        // console.log(this.image + " was clicked");
-
         this.isActive = !this.isActive;
+
+        glyphLight.position.copy(this.position);
 
         setInfo(this.htmlData);
 
@@ -307,54 +288,13 @@ for (let i = 0; i < glyphData.length; i++) {
     scene.add(glyphs[i]);
     raycastLayer.push(glyphs[i]);   // add this to what gets checked by raycast
 
-    // console.log("loading " + glyphData[i].image);
-
-    // const glyphTexture = new THREE.TextureLoader().load(glyphData[i].image);
-
-    // const glyphMat = new THREE.MeshStandardMaterial({
-    //     map: glyphTexture,
-    //     toneMapped: false,
-    //     emissive: "red",
-    //     emissiveIntensity: 10,
-    //     transparent: true,
-    //     // encoding: THREE.sRGBEncoding
-    // });
-
-    // const geometry = new THREE.PlaneGeometry(.12, .12);
-    // const plane = new THREE.Mesh(geometry, glyphMat);
-    // // plane.scale.set(5, 5, 5);
-
-    // const p = new THREE.Vector3(glyphData[i].position.x, glyphData[i].position.y, glyphData[i].position.z);
-    // plane.position.copy(p);
-
-    // glyphs[i] = plane;
-
-    // scene.add(glyphs[i]);
-
 }
 
-// const glyphTexture = new THREE.TextureLoader().load("map-assets/glyph-test2.png");
-// // const glyphMat = new THREE.MeshPhongMaterial({ map: glyphTexture, transparent: true, emissiveIntensity: 10 });
-
-// const glyphMat = new THREE.MeshLambertMaterial({
-//     map: glyphTexture,
-//     toneMapped: false,
-//     emissive: "red",
-//     emissiveIntensity: 10,
-//     transparent: true,
-//     // encoding: THREE.sRGBEncoding
-// });
-
-// const geometry = new THREE.PlaneGeometry(.12, .12);
-// const plane = new THREE.Mesh(geometry, glyphMat);
-// plane.scale.set(5, 5, 5);
-// scene.add(plane);
-// plane.position.set(0, 0, .2);
 
 // glyph light
-// const glyphLight = new THREE.PointLight(0xff0000, 1, 1);
-// glyphLight.position.set(0, 0, .2);
-// scene.add(glyphLight);
+const glyphLight = new THREE.PointLight(0xff0000, 3, 1);
+glyphLight.position.setScalar(100); // put it aside for now
+scene.add(glyphLight);
 
 
 
