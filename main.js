@@ -27,7 +27,8 @@ divDebug.style.display = "none";
 
 // ----------------------- FLAGS, OPTIONS
 THREE.ColorManagement.legacyMode = false;
-const glyphScale = 1;
+const glyphScale = 1.5;
+const activeGlyphScale = 1.7;
 const mapScale = 10;
 let overlay = false;
 const guiActive = false;
@@ -39,38 +40,58 @@ document.body.appendChild(stats.dom);
 
 // ----------------------- DATA
 const assetsDir = "map-assets/";
+const glyphDir = assetsDir + "/glyphs_jpg/";
 // var glyphImages = ['glyph-test.png', 'glyph-test2.png', 'glyph-test3.png'];
 // glyphImages = glyphImages.map(i => assetsDir + i);  // prepend each w directory
 const glyphData =
     [
         {
-            "image": assetsDir + 'glyph-test.png',
+            "image": glyphDir + 'glyph_1.jpg',
             "URL": "https://www.example.com/object.obj",
             "title": "The Title1",
             "description": "description 1",
-            "position": { x: 0, y: 0, z: .5 },
+            "position": { x: -4.0, y: 3.7, z: .5 },
             "scale": { x: 1, y: 1, z: 1 },
-            // "camOffset": { x: -.05, y: 0, z: -.2 },
-            // "camRot": { x: 0, y: 0, z: degToRad(0) },
         },
         {
-            "image": assetsDir + 'glyph-test2.png',
+            "image": glyphDir + 'glyph_2.jpg',
             "URL": "https://www.google.com",
             "title": "The Title2",
             "description": "another description",
-            "position": { x: 1.5, y: -1, z: .5 },
-            // "camOffset": { x: -.07, y: -.10, z: 0.0 },
-            // "camRot": { x: 0, y: 0, z: degToRad(180) },
+            "position": { x: 3.92, y: 4, z: .5 },
+            "rotation": { x: degToRad(10), y: degToRad(-15), z: 0 },
         },
         {
-            "image": assetsDir + 'glyph-test3.png',
+            "image": glyphDir + 'glyph_3.jpg',
             "URL": "https://www.google.com",
             "title": "The Title3",
             "description": "another description",
-            "position": { x: -3.8, y: 3, z: .5 },
-            "rotation": { x: degToRad(-10), y: 0, z: 0 },
-            // "camOffset": { x: -.07, y: -.10, z: 0.0 },
-            // "camRot": { x: 0, y: 0, z: degToRad(180) },
+            "position": { x: -0.35, y: 2.70, z: .5 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_4.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title4",
+            "description": "another description4",
+            "position": { x: 1.05, y: -3.85, z: .2 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_5.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 5",
+            "description": "another description 5",
+            "position": { x: 4.0, y: -3.8, z: .5 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_6.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 6",
+            "description": "another description 6",
+            "position": { x: -4.09, y: -1.86, z: .5 },
+            "rotation": { x: degToRad(-12), y: 0, z: degToRad(-8) },
         },
     ];
 
@@ -190,6 +211,13 @@ loader.load("map-assets/map-2048.glb", function (gltf) {
 
 
 
+// testing...
+// const geometry = new THREE.BoxGeometry( .1, .1, .1 );
+// const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+// const cube = new THREE.Mesh( geometry, material );
+// scene.add( cube );
+// cube.position.set(5,-5,.5);
+
 
 
 // ----------------------- GLYPHS
@@ -213,10 +241,12 @@ class Glyph extends THREE.Mesh {
 
         this.material = new THREE.MeshStandardMaterial({
             map: tex,
+            alphaMap: tex,
+            alphaTest: .05,
+            transparent: true,
             toneMapped: false,
             emissive: "red",
             emissiveIntensity: 10,
-            transparent: true,
             // encoding: THREE.sRGBEncoding
         });
 
@@ -236,7 +266,7 @@ class Glyph extends THREE.Mesh {
 
         new TWEEN.Tween(this.scale)
             .to(
-                { x: 1.2, y: 1.2, z: 1.2, }, 200)
+                { x: activeGlyphScale, y: activeGlyphScale, z: activeGlyphScale }, 200)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .onUpdate(() => {
                 render();
@@ -254,7 +284,7 @@ class Glyph extends THREE.Mesh {
 
         new TWEEN.Tween(this.scale)
             .to(
-                { x: 1, y: 1, z: 1, }, 200)
+                { x: glyphScale, y: glyphScale, z: glyphScale }, 200)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .onUpdate(() => {
                 render();
