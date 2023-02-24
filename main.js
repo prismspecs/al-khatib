@@ -29,6 +29,8 @@ divDebug.style.display = "none";
 THREE.ColorManagement.legacyMode = false;
 const glyphScale = 1.5;
 const activeGlyphScale = 1.7;
+const gInactiveColor = new THREE.Color(0xdd3333);
+const gActiveColor = new THREE.Color(0xff0000);
 const mapScale = 10;
 let overlay = false;
 const guiActive = false;
@@ -66,8 +68,8 @@ const glyphData =
             "URL": "https://www.google.com",
             "title": "The Title3",
             "description": "another description",
-            "position": { x: -0.35, y: 2.70, z: .5 },
-            "rotation": { x: 0, y: 0, z: 0 },
+            "position": { x: -0.35, y: 2.70, z: .4 },
+            "rotation": { x: degToRad(-10), y: 0, z: 0 },
         },
         {
             "image": glyphDir + 'glyph_4.jpg',
@@ -92,6 +94,238 @@ const glyphData =
             "description": "another description 6",
             "position": { x: -4.09, y: -1.86, z: .5 },
             "rotation": { x: degToRad(-12), y: 0, z: degToRad(-8) },
+        },
+        {
+            "image": glyphDir + 'glyph_7.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 7",
+            "description": "another description 7",
+            "position": { x: 4.3, y: 0.68, z: .55 },
+            "rotation": { x: 0, y: degToRad(18), z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_8.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 8",
+            "description": "another description 8",
+            "position": { x: -2.34, y: 1.1, z: .4 },
+            "rotation": { x: degToRad(10), y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_9.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 9",
+            "description": "another description 9",
+            "position": { x: 4.0, y: 2.3, z: .5 },
+            "rotation": { x: degToRad(-10), y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_10.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 10",
+            "description": "another description 10",
+            "position": { x: -0.61, y: -3.69, z: .35 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_11.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 11",
+            "description": "another description 11",
+            "position": { x: -3.16, y: 2.74, z: .55 },
+            "rotation": { x: degToRad(-6), y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_12.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 12",
+            "description": "another description 12",
+            "position": { x: -1.79, y: 3.96, z: .3 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_13.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 13",
+            "description": "another description 13",
+            "position": { x: 1.95, y: 0.48, z: .3 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_14.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 14",
+            "description": "another description 14",
+            "position": { x: 3.0, y: 1.28, z: .6 },
+            "rotation": { x: 0, y: degToRad(-11), z: degToRad(-6) },
+        },
+        {
+            "image": glyphDir + 'glyph_15.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 15",
+            "description": "another description 15",
+            "position": { x: 0.38, y: -1.86, z: .4 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_16.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 16",
+            "description": "another description 16",
+            "position": { x: -4.13, y: 1.37, z: .5 },
+            "rotation": { x: 0, y: degToRad(7), z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_17.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 17",
+            "description": "another description 17",
+            "position": { x: 1.47, y: -0.86, z: .35 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_18.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 18",
+            "description": "another description 18",
+            "position": { x: -1.18, y: -1.38, z: .35 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_19.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 19",
+            "description": "another description 19",
+            "position": { x: -1.86, y: -2.56, z: .5 },
+            "rotation": { x: 0, y: 0, z: degToRad(-28) },
+        },
+        {
+            "image": glyphDir + 'glyph_20.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 20",
+            "description": "another description 20",
+            "position": { x: 2.62, y: -3.7, z: .35 },
+            "rotation": { x: 0, y: 0, z: degToRad(-8) },
+        },
+        {
+            "image": glyphDir + 'glyph_21.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 21",
+            "description": "another description 21",
+            "position": { x: 4.5, y: -1.5, z: .4 },
+            "rotation": { x: 0, y: degToRad(15), z: degToRad(-90) },
+        },
+        {
+            "image": glyphDir + 'glyph_23.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 22",
+            "description": "another description 22",
+            "position": { x: 2.2, y: 3.1, z: .3 },
+            "rotation": { x: 0, y: 0, z: degToRad(-7) },
+        },
+        {
+            "image": glyphDir + 'glyph_23.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 23",
+            "description": "another description 23",
+            "position": { x: -3.60, y: 0.30, z: .3 },
+            "rotation": { x: 0, y: 0, z: degToRad(50) },
+        },
+        {
+            "image": glyphDir + 'glyph_24.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 24",
+            "description": "another description 24",
+            "position": { x: -3.6, y: -3.24, z: .3 },
+            "rotation": { x: degToRad(10), y: 0, z: degToRad(-30) },
+        },
+        {
+            "image": glyphDir + 'glyph_25.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 25",
+            "description": "another description 25",
+            "position": { x: 1.69, y: 1.93, z: .35 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_26.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 26",
+            "description": "another description 26",
+            "position": { x: 1.47, y: -2.46, z: .35 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_27.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 27",
+            "description": "another description 27",
+            "position": { x: -2.17, y: -3.83, z: .25 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_28.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 28",
+            "description": "another description 28",
+            "position": { x: -1.93, y: 2.2, z: .45 },
+            "rotation": { x: 0, y: 0, z: degToRad(-5) },
+        },
+        {
+            "image": glyphDir + 'glyph_29.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 29",
+            "description": "another description 29",
+            "position": { x: -2.7, y: -1.03, z: .35 },
+            "rotation": { x: degToRad(-13), y: 0, z: degToRad(10) },
+        },
+        {
+            "image": glyphDir + 'glyph_30.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 30",
+            "description": "another description 30",
+            "position": { x: 0.06, y: 1.18, z: .35 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_31.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 31",
+            "description": "another description 31",
+            "position": { x: 3.34, y: -0.30, z: .5 },
+            "rotation": { x: 0, y: degToRad(-13), z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_32.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 32",
+            "description": "another description 32",
+            "position": { x: 3.24, y: -2.34, z: .55 },
+            "rotation": { x: 0, y: degToRad(-13), z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_33.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 33",
+            "description": "another description 33",
+            "position": { x: -0.24, y: -0.68, z: .40 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_34.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 34",
+            "description": "another description 34",
+            "position": { x: -2.08, y: -0.03, z: .35 },
+            "rotation": { x: 0, y: 0, z: 0 },
+        },
+        {
+            "image": glyphDir + 'glyph_35.jpg',
+            "URL": "https://www.google.com",
+            "title": "The Title 35",
+            "description": "another description 35",
+            "position": { x: 0.97, y: 3.7, z: .4 },
+            "rotation": { x: 0, y: 0, z: 0 },
         },
     ];
 
@@ -174,7 +408,7 @@ window.addEventListener('click', (e) => {
         if (overlay) {
             // overlay = false;
             // fadeOut(divOverlay);
-        } else { 
+        } else {
 
         }
     }
@@ -195,7 +429,7 @@ scene.add(ambLight);
 var map = null;
 
 let loader = new GLTFLoader();
-loader.load("map-assets/map-2048.glb", function (gltf) {
+loader.load("map-assets/map-2048-faded.glb", function (gltf) {
 
     map = gltf.scene.children[0];
     map.position.z = 0;
@@ -208,16 +442,6 @@ loader.load("map-assets/map-2048.glb", function (gltf) {
     console.error(error);
 
 });
-
-
-
-// testing...
-// const geometry = new THREE.BoxGeometry( .1, .1, .1 );
-// const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-// const cube = new THREE.Mesh( geometry, material );
-// scene.add( cube );
-// cube.position.set(5,-5,.5);
-
 
 
 // ----------------------- GLYPHS
@@ -245,8 +469,9 @@ class Glyph extends THREE.Mesh {
             alphaTest: .05,
             transparent: true,
             toneMapped: false,
-            emissive: "red",
-            emissiveIntensity: 10,
+            emissive: gInactiveColor,
+            //color: "red",
+            emissiveIntensity: 1,
             // encoding: THREE.sRGBEncoding
         });
 
@@ -274,7 +499,7 @@ class Glyph extends THREE.Mesh {
             .start();
 
         new TWEEN.Tween(this.material)
-            .to({ emissiveIntensity: 10 }, 200)
+            .to({ emissive: gActiveColor, emissiveIntensity: 10 }, 200)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .start();
 
@@ -292,7 +517,7 @@ class Glyph extends THREE.Mesh {
             .start();
 
         new TWEEN.Tween(this.material)
-            .to({ emissiveIntensity: 1 }, 200)
+            .to({ emissiveIntensity: 1, emissive: gInactiveColor }, 200)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .start();
 
@@ -302,7 +527,7 @@ class Glyph extends THREE.Mesh {
 
         this.isActive = !this.isActive;
 
-        glyphLight.position.copy(this.position);
+        // glyphLight.position.copy(this.position);
 
         setInfo(this.htmlData);
 
@@ -322,7 +547,7 @@ for (let i = 0; i < glyphData.length; i++) {
 
 
 // glyph light
-const glyphLight = new THREE.PointLight(0xff0000, 3, 1);
+const glyphLight = new THREE.PointLight(0xffffff, 3, 1);
 glyphLight.position.setScalar(100); // put it aside for now
 scene.add(glyphLight);
 
@@ -348,7 +573,7 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping
 
 
 // ----------------------- GUI
-if(guiActive) {
+if (guiActive) {
     const gui = new GUI();
     let params = {
         // myBoolean: true,
