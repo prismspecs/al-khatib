@@ -10,6 +10,7 @@ import GUI from 'lil-gui';
 import Stats from 'stats.js'
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
 import { degToRad } from 'three/src/math/MathUtils';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 // import { RedFormat } from 'three';
 // import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
@@ -33,7 +34,7 @@ const gInactiveColor = new THREE.Color(0xdd3333);
 const gActiveColor = new THREE.Color(0xff0000);
 const mapScale = 10;
 let overlay = false;
-const guiActive = false;
+const guiActive = true;
 
 // ----------------------- STATS
 const stats = new Stats();
@@ -341,6 +342,7 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x111111);
 document.body.appendChild(renderer.domElement);
+renderer.setPixelRatio(window.devicePixelRatio);
 
 // ----------------------- CONTROLS
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -425,11 +427,30 @@ scene.add(dirLight);
 const ambLight = new THREE.AmbientLight(0x404040, .5); // soft white light
 scene.add(ambLight);
 
+
+// ----------------------- BACKGROUND
+const backgroundTex = new THREE.TextureLoader().load("map-assets/pano2-blur-crop.jpg");
+backgroundTex.mapping = THREE.EquirectangularReflectionMapping;
+scene.background = backgroundTex;
+scene.environment = backgroundTex;
+// new RGBELoader()
+//     .load('map-assets/goegap_1k.hdr', function (texture) {
+
+//         texture.mapping = THREE.EquirectangularReflectionMapping;
+
+//         scene.background = texture;
+//         scene.environment = texture;
+
+//         render();
+
+//     });
+
+
 // ----------------------- MAP
 var map = null;
 
 let loader = new GLTFLoader();
-loader.load("map-assets/map-2048-faded.glb", function (gltf) {
+loader.load("map-assets/map-2048.glb", function (gltf) {
 
     map = gltf.scene.children[0];
     map.position.z = 0;
@@ -568,8 +589,8 @@ composer.addPass(new ShaderPass(GammaCorrectionShader))
 // setting threshold to 1 will make sure nothing glows
 composer.addPass(new UnrealBloomPass(undefined, .5, 1, 1))   // thresh, str, radius
 
-// renderer.outputEncoding = THREE.sRGBEncoding
-renderer.toneMapping = THREE.ACESFilmicToneMapping
+// renderer.outputEncoding = THREE.sRGBEncoding;
+// renderer.toneMapping = THREE.ACESFilmicToneMapping
 
 
 // ----------------------- GUI
@@ -630,3 +651,7 @@ function setInfo(data) {
         divDescription.innerHTML = data.description;
     }
 }
+
+
+
+
