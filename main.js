@@ -23,18 +23,31 @@ const divOverlay = document.getElementById("overlay-outer");
 const divTitle = document.getElementById("overlay-title");
 const divDescription = document.getElementById("overlay-description");
 const divContent = document.getElementById("overlay-content");
+
+// const overlayCloser = document.getElementById("overlay-close");
+const overlayClosers = document.getElementsByClassName('overlay-close');
+for (var i = 0; i < overlayClosers.length; i++) {
+    overlayClosers[i].addEventListener('click', function () {
+
+        overlayClose();
+
+    }, false);
+}
+
 divLanding.style.display = "none";
 divDebug.style.display = "none";
 
 // ----------------------- FLAGS, OPTIONS
 THREE.ColorManagement.legacyMode = false;
-const glyphScale = 1.5;
-const activeGlyphScale = 1.7;
+const glyphScale = 1.8;
+const activeGlyphScale = 2;
 const gInactiveColor = new THREE.Color(0xdd3333);
 const gActiveColor = new THREE.Color(0xff0000);
 const mapScale = 10;
 let overlay = false;
-const guiActive = true;
+const guiActive = false;
+const bypassComposer = false;
+const shadowMapSize = 2056;
 
 // ----------------------- STATS
 const stats = new Stats();
@@ -50,6 +63,7 @@ const glyphData =
     [
         {
             "image": glyphDir + 'glyph_1.jpg',
+            // "image": assetsDir + 'glyph-test.png',
             "URL": "https://www.example.com/object.obj",
             "title": "The Title1",
             "description": "description 1",
@@ -417,15 +431,45 @@ window.addEventListener('click', (e) => {
 
 })
 
+window.addEventListener("keydown", (event) => {
+
+    // console.log(event.code);
+
+    if (event.code === "Escape") {
+        overlayClose();
+    }
+});
+
+
+function overlayClose() {
+    if (overlay) {
+        overlay = false;
+        fadeOut(divOverlay);
+    }
+}
 
 
 // ----------------------- LIGHTING
-const dirLight = new THREE.DirectionalLight(0xffffff, .25);
+const dirLight = new THREE.DirectionalLight(0xffffff, .4);
 dirLight.position.setScalar(5);  // get it away from center
+dirLight.position.set(0, 5, 15);
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.width = shadowMapSize;
+dirLight.shadow.mapSize.height = shadowMapSize;
+dirLight.shadow.bias = - 0.0001;
 scene.add(dirLight);
+// const helper = new THREE.CameraHelper(dirLight.shadow.camera)
+// scene.add(helper)
 
-const ambLight = new THREE.AmbientLight(0x404040, .5); // soft white light
-scene.add(ambLight);
+// const ambLight = new THREE.AmbientLight(0x404040, .5); // soft white light
+// scene.add(ambLight);
+
+// const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+// pointLight.position.set(0, 0, 5);
+// pointLight.castShadow = true;
+// scene.add(pointLight);
+
+
 
 
 // ----------------------- BACKGROUND
@@ -452,6 +496,15 @@ var map = null;
 let loader = new GLTFLoader();
 loader.load("map-assets/map-2048.glb", function (gltf) {
 
+    gltf.scene.traverse(function (object) {
+
+        if (object.isMesh) {
+            object.receiveShadow = true;
+            object.castShadow = true;
+        }
+
+    });
+
     map = gltf.scene.children[0];
     map.position.z = 0;
     map.scale.setScalar(mapScale);
@@ -463,6 +516,26 @@ loader.load("map-assets/map-2048.glb", function (gltf) {
     console.error(error);
 
 });
+
+
+
+
+// const geometry = new THREE.BoxGeometry(11, 11, 1);
+// const material = new THREE.MeshStandardMaterial({ color: 0xbbccaa });
+// const cube = new THREE.Mesh(geometry, material);
+// cube.position.set(0, 0, -1);
+// cube.receiveShadow = true;
+// scene.add(cube);
+
+// const geometry2 = new THREE.BoxGeometry(3, 3, 3);
+// const material2 = new THREE.MeshStandardMaterial({ color: 0x555555 });
+// const cube2 = new THREE.Mesh(geometry2, material2);
+// cube2.position.set(1, 0, 5);
+// cube2.receiveShadow = true;
+// cube2.castShadow = true;
+// scene.add(cube2);
+
+
 
 
 // ----------------------- GLYPHS
@@ -481,20 +554,25 @@ class Glyph extends THREE.Mesh {
         this.geometry = new THREE.PlaneGeometry(1, 1);
         this.scale.setScalar(glyphScale);
         this.isActive = false;
+        
+        // this.receiveShadow = true;
 
         const tex = new THREE.TextureLoader().load(data.image);
 
         this.material = new THREE.MeshStandardMaterial({
             map: tex,
             alphaMap: tex,
-            alphaTest: .05,
+            alphaTest: .15,
             transparent: true,
-            toneMapped: false,
+            shadowSide: THREE.DoubleSide,
+            opacity:0,
+            // color: 0xeeaaee,
+            // toneMapped: false,
             emissive: gInactiveColor,
-            //color: "red",
             emissiveIntensity: 1,
-            // encoding: THREE.sRGBEncoding
         });
+        this.castShadow = true;
+
 
         // textual/html stuff
         this.htmlData = [];
@@ -510,19 +588,23 @@ class Glyph extends THREE.Mesh {
 
     onPointerOver(e) {
 
-        new TWEEN.Tween(this.scale)
-            .to(
-                { x: activeGlyphScale, y: activeGlyphScale, z: activeGlyphScale }, 200)
-            .easing(TWEEN.Easing.Quadratic.InOut)
-            .onUpdate(() => {
-                render();
-            })
-            .start();
+        if (!overlay) {
+            new TWEEN.Tween(this.scale)
+                .to(
+                    { x: activeGlyphScale, y: activeGlyphScale, z: activeGlyphScale }, 200)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .onUpdate(() => {
+                    render();
+                })
+                .start();
 
-        new TWEEN.Tween(this.material)
-            .to({ emissive: gActiveColor, emissiveIntensity: 10 }, 200)
-            .easing(TWEEN.Easing.Quadratic.InOut)
-            .start();
+            new TWEEN.Tween(this.material)
+                .to({ emissive: gActiveColor, emissiveIntensity: 10, opacity: 1 }, 200)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .start();
+        }
+
+
 
     }
 
@@ -538,7 +620,7 @@ class Glyph extends THREE.Mesh {
             .start();
 
         new TWEEN.Tween(this.material)
-            .to({ emissiveIntensity: 1, emissive: gInactiveColor }, 200)
+            .to({ emissiveIntensity: 1, emissive: gInactiveColor, opacity:0 }, 200)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .start();
 
@@ -554,7 +636,10 @@ class Glyph extends THREE.Mesh {
 
         render();
     }
+
+
 }
+
 
 
 let glyphs = [];
@@ -585,12 +670,15 @@ const target = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight
 target.samples = 0; // was 8
 const composer = new EffectComposer(renderer, target)
 composer.addPass(new RenderPass(scene, camera))
-composer.addPass(new ShaderPass(GammaCorrectionShader))
+// composer.addPass(new ShaderPass(GammaCorrectionShader))
 // setting threshold to 1 will make sure nothing glows
 composer.addPass(new UnrealBloomPass(undefined, .5, 1, 1))   // thresh, str, radius
 
 // renderer.outputEncoding = THREE.sRGBEncoding;
 // renderer.toneMapping = THREE.ACESFilmicToneMapping
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
 
 
 // ----------------------- GUI
@@ -622,7 +710,12 @@ function render() {
 
     stats.begin();
 
-    composer.render();
+    if(bypassComposer) {
+        renderer.render(scene, camera);
+    } else {
+        composer.render();
+    }
+    
 
     stats.end();
 }
