@@ -477,17 +477,6 @@ const backgroundTex = new THREE.TextureLoader().load("map-assets/pano2-blur-crop
 backgroundTex.mapping = THREE.EquirectangularReflectionMapping;
 scene.background = backgroundTex;
 scene.environment = backgroundTex;
-// new RGBELoader()
-//     .load('map-assets/goegap_1k.hdr', function (texture) {
-
-//         texture.mapping = THREE.EquirectangularReflectionMapping;
-
-//         scene.background = texture;
-//         scene.environment = texture;
-
-//         render();
-
-//     });
 
 
 // ----------------------- MAP
@@ -520,24 +509,6 @@ loader.load("map-assets/map-2048.glb", function (gltf) {
 
 
 
-// const geometry = new THREE.BoxGeometry(11, 11, 1);
-// const material = new THREE.MeshStandardMaterial({ color: 0xbbccaa });
-// const cube = new THREE.Mesh(geometry, material);
-// cube.position.set(0, 0, -1);
-// cube.receiveShadow = true;
-// scene.add(cube);
-
-// const geometry2 = new THREE.BoxGeometry(3, 3, 3);
-// const material2 = new THREE.MeshStandardMaterial({ color: 0x555555 });
-// const cube2 = new THREE.Mesh(geometry2, material2);
-// cube2.position.set(1, 0, 5);
-// cube2.receiveShadow = true;
-// cube2.castShadow = true;
-// scene.add(cube2);
-
-
-
-
 // ----------------------- GLYPHS
 
 class Glyph extends THREE.Mesh {
@@ -554,18 +525,23 @@ class Glyph extends THREE.Mesh {
         this.geometry = new THREE.PlaneGeometry(1, 1);
         this.scale.setScalar(glyphScale);
         this.isActive = false;
-        
+
         // this.receiveShadow = true;
 
         const tex = new THREE.TextureLoader().load(data.image);
+
+        let randCol = new THREE.Color(0xffffff);
+        randCol.setHex(Math.random() * 0xffffff);
 
         this.material = new THREE.MeshStandardMaterial({
             map: tex,
             alphaMap: tex,
             alphaTest: .15,
             transparent: true,
-            shadowSide: THREE.DoubleSide,
-            opacity:0,
+            // shadowSide: THREE.DoubleSide,
+            opacity: 0,
+            side: 2,
+            color: randCol,
             // color: 0xeeaaee,
             // toneMapped: false,
             emissive: gInactiveColor,
@@ -582,9 +558,7 @@ class Glyph extends THREE.Mesh {
 
     }
 
-    render() {
 
-    }
 
     onPointerOver(e) {
 
@@ -620,7 +594,7 @@ class Glyph extends THREE.Mesh {
             .start();
 
         new TWEEN.Tween(this.material)
-            .to({ emissiveIntensity: 1, emissive: gInactiveColor, opacity:0 }, 200)
+            .to({ emissiveIntensity: 1, emissive: gInactiveColor, opacity: 0 }, 200)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .start();
 
@@ -709,13 +683,14 @@ render();
 function render() {
 
     stats.begin();
-
-    if(bypassComposer) {
-        renderer.render(scene, camera);
-    } else {
-        composer.render();
+    if (!overlay) {
+        if (bypassComposer) {
+            renderer.render(scene, camera);
+        } else {
+            composer.render();
+        }
     }
-    
+
 
     stats.end();
 }
