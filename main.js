@@ -1,3 +1,14 @@
+/*
+
+    TO DO:
+    + crop images to content and make corresponding fix to mesh
+    + load data from WP
+        + https://al-khatib-glossar.com/wp-json/wp/v2/glossary_entry
+    + change background
+
+*/
+
+
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -55,10 +66,12 @@ stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild(stats.dom);
 
 // ----------------------- DATA
-const assetsDir = "map-assets/";
+const assetsPrepend = "";
+// assetsPrepend = "https://al-khatib-glossar.com/wp-content/themes/blankslate/";
+
+const assetsDir = assetsPrepend + "map-assets/";
 const glyphDir = assetsDir + "/glyphs_jpg/";
-// var glyphImages = ['glyph-test.png', 'glyph-test2.png', 'glyph-test3.png'];
-// glyphImages = glyphImages.map(i => assetsDir + i);  // prepend each w directory
+
 const glyphData =
     [
         {
@@ -473,7 +486,7 @@ scene.add(dirLight);
 
 
 // ----------------------- BACKGROUND
-const backgroundTex = new THREE.TextureLoader().load("map-assets/pano2-blur-crop.jpg");
+const backgroundTex = new THREE.TextureLoader().load(assetsDir + "pano2-blur-crop.jpg");
 backgroundTex.mapping = THREE.EquirectangularReflectionMapping;
 scene.background = backgroundTex;
 scene.environment = backgroundTex;
@@ -483,7 +496,7 @@ scene.environment = backgroundTex;
 var map = null;
 
 let loader = new GLTFLoader();
-loader.load("map-assets/map-2048.glb", function (gltf) {
+loader.load(assetsDir + "map-2048.glb", function (gltf) {
 
     gltf.scene.traverse(function (object) {
 
@@ -522,33 +535,87 @@ class Glyph extends THREE.Mesh {
             this.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
         }
 
-        this.geometry = new THREE.PlaneGeometry(1, 1);
-        this.scale.setScalar(glyphScale);
         this.isActive = false;
-
-        // this.receiveShadow = true;
-
-        const tex = new THREE.TextureLoader().load(data.image);
 
         let randCol = new THREE.Color(0xffffff);
         randCol.setHex(Math.random() * 0xffffff);
 
-        this.material = new THREE.MeshStandardMaterial({
-            map: tex,
-            alphaMap: tex,
-            alphaTest: .15,
-            transparent: true,
-            // shadowSide: THREE.DoubleSide,
-            opacity: 0,
-            side: 2,
-            color: randCol,
-            // color: 0xeeaaee,
-            // toneMapped: false,
-            emissive: gInactiveColor,
-            emissiveIntensity: 1,
-        });
-        this.castShadow = true;
+        // this.receiveShadow = true;
 
+        // OLDSCHOOL METHOD...
+        // const texture = new THREE.TextureLoader().load(data.image);
+        // console.log(texture.image.width);
+        // this.material = new THREE.MeshStandardMaterial({
+        //     map: texture,
+        //     alphaMap: texture,
+        //     alphaTest: .15,
+        //     transparent: true,
+        //     // shadowSide: THREE.DoubleSide,
+        //     opacity: 0,
+        //     side: 2,
+        //     color: randCol,
+        //     // color: 0xeeaaee,
+        //     // toneMapped: false,
+        //     emissive: gInactiveColor,
+        //     emissiveIntensity: 1,
+        // });
+
+        // CALLBACK METHOD ...
+        // instantiate a loader
+        const loader = new THREE.TextureLoader();
+
+        const glyph = this;
+        let nw, nh = 0;
+
+        loader.load(
+
+            data.image,
+
+            // onLoad callback
+            function (texture) {
+
+                //console.log(texture.image.width);
+                const w = texture.image.width;
+                const h = texture.image.height;
+
+                if (w > h) {
+                    nw = 1;
+                    nh = h / w;
+                } else {
+                    nh = 1;
+                    nw = w / h;
+                }
+
+                // console.log("w: " + nw + " h: " + nh);
+                glyph.geometry = new THREE.PlaneGeometry(nw, nh);
+
+                glyph.material = new THREE.MeshStandardMaterial({
+                    map: texture,
+                    alphaMap: texture,
+                    alphaTest: .15,
+                    transparent: true,
+                    opacity: 0,
+                    side: 2,
+                    color: randCol,
+                    emissive: gInactiveColor,
+                    emissiveIntensity: 1,
+                });
+            },
+
+            // onProgress callback currently not supported
+            undefined,
+
+            // onError callback
+            function (err) {
+                console.error('An error happened.');
+            }
+        );
+
+
+        // this.geometry = new THREE.PlaneGeometry(1, 1);
+        this.scale.setScalar(glyphScale);
+
+        this.castShadow = true;
 
         // textual/html stuff
         this.htmlData = [];
