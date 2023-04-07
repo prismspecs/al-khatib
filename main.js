@@ -1,10 +1,9 @@
 /*
 
     TO DO:
-    + crop images to content and make corresponding fix to mesh
+    + only closest glyph is activated
     + load data from WP
         + https://al-khatib-glossar.com/wp-json/wp/v2/glossary_entry
-    + change background
 
 */
 
@@ -49,7 +48,7 @@ divLanding.style.display = "none";
 divDebug.style.display = "none";
 
 // ----------------------- FLAGS, OPTIONS
-THREE.ColorManagement.legacyMode = false;
+// THREE.ColorManagement.legacyMode = false;
 const glyphScale = 1.8;
 const activeGlyphScale = 2;
 const gInactiveColor = new THREE.Color(0xdd3333);
@@ -59,6 +58,7 @@ let overlay = false;
 const guiActive = false;
 const bypassComposer = false;
 const shadowMapSize = 2056;
+const bgColor = new THREE.Color(0xee7edc);
 
 // ----------------------- STATS
 const stats = new Stats();
@@ -71,6 +71,63 @@ const assetsPrepend = "";
 
 const assetsDir = assetsPrepend + "map-assets/";
 const glyphDir = assetsDir + "/glyphs_jpg/";
+
+
+
+const glyphDataX = [];
+// retrieve the glossary posts data
+const fetchURL = "https://al-khatib-glossar.com/wp-json/wp/v2/posts?categories=2&acf_format=standard&_embed";
+// _embed gives the additional featured image data, acf_format=standard gives full json data for acf
+
+fetch(fetchURL)
+    .then(res => res.json())
+    .then((data) => {
+
+        console.log('Output: ', data);
+
+        data.forEach(obj => {
+
+            // console.log("acf:");
+            console.log(obj._embedded['wp:featuredmedia'][0].media_details.sizes.full.source_url);
+
+            const j = {
+                "id": obj.id,
+                "image": obj._embedded['wp:featuredmedia'][0].media_details.sizes.full.source_url,
+                "URL": obj.link,
+                "title": obj.title.rendered,
+                // "postData": obj.content.rendered,
+                "position": {
+                    "x": obj.acf.position.x,
+                    "y": obj.acf.position.y,
+                    "z": obj.acf.position.z,
+                },
+                "rotation": {
+                    "x": obj.acf.rotation.x,
+                    "y": obj.acf.rotation.y,
+                    "z": obj.acf.rotation.z,
+                },
+                "post": {
+                    "english": obj.acf.english,
+                    "german": obj.acf.german,
+                    "arabic": obj.acf.arabic,
+                },
+                "author": obj.acf.author,
+            };
+            glyphDataX.push(j);
+
+            // REMEMBER TO WRAP ROTATION IN degToRad()
+
+            // Object.entries(obj).forEach(([key, value]) => {
+            //     console.log(`${key} ${value}`);
+            // });
+            // console.log('-------------------');
+        });
+
+    }).catch(err => console.error(err));
+
+console.log("glyph data:");
+console.log(glyphDataX);
+
 
 const glyphData =
     [
@@ -367,7 +424,7 @@ camera.position.set(0, 0, 5);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x111111);
+renderer.setClearColor(bgColor);
 document.body.appendChild(renderer.domElement);
 renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -381,7 +438,10 @@ const pointer = new THREE.Vector2();
 
 var raycastLayer = [];
 let hovered = {};
+// let hovered = null;
 let intersects = [];
+
+let lastHitObjectObject = null;
 
 window.addEventListener('pointermove', (e) => {
 
@@ -389,9 +449,77 @@ window.addEventListener('pointermove', (e) => {
     raycaster.setFromCamera(pointer, camera)
     intersects = raycaster.intersectObjects(raycastLayer, true)
 
-    // If a previously hovered item is not among the hits we must call onPointerOut
+
+
+    // Just check if value of hovered is the same as intersects[0], 
+    // call onPointerOut if it’s not, then call onPointerOver for intersects[0],
+    // set hovered to intersects[0].)
+
+    // if (intersects.length > 0) {
+    //     const hit = intersects[0];
+    //     if (hovered != hit) {
+
+    //         hovered = hit;
+
+    //         if (hovered.object.onPointerOut) {
+    //             // console.log("!");
+    //             hovered.object.onPointerOut(hovered)
+    //         };
+
+    //         if (hit.object.onPointerOver) hit.object.onPointerOver(hit);
+
+
+    //         // console.log(hovered.object.onPointerOut);
+    //     }
+    // } else {
+    //     if (hovered && hovered.object.onPointerOut) {
+    //         // console.log("!");
+    //         hovered.object.onPointerOut(hovered)
+    //     };
+    //     hovered = null;
+    //     // if (hovered.object.onPointerOver) hovered.object.onPointerOut(hit);
+    // }
+
+
+
+    // console.log(intersects.length);
+
+    // remove all but the first (the closest)
+    // if (intersects.length > 0) {
+
+    //     // console.log("hit");
+
+    //     const hit = intersects[0];
+
+    //     console.log(hit);
+
+    //     if(lastHitObjectObject != null) {
+    //         if(hit.object.uuid != lastHitObject.uuid) {
+
+    //             // console.log("!");
+
+    //             lastHitObject.onPointerOut();
+
+    //             hit.object.onPointerOver();
+
+    //             lastHitObject = hit.object;
+
+    //         }
+    //     } else {
+    //         hit.object.onPointerOver();
+    //         lastHitObject = hit.object;
+    //     }
+
+    // } else {
+    //     lastHitObject = null;
+    // }
+
+
+    // if a previously hovered item is not among the hits we must call onPointerOut
     Object.keys(hovered).forEach((key) => {
+
         const hit = intersects.find((hit) => hit.object.uuid === key)
+
         if (hit === undefined) {
             const hoveredItem = hovered[key]
             if (hoveredItem.object.onPointerOver) hoveredItem.object.onPointerOut(hoveredItem)
@@ -400,14 +528,17 @@ window.addEventListener('pointermove', (e) => {
     })
 
     intersects.forEach((hit) => {
+
         // if a hit has not been flagged as hovered we must call onPointerOver
         if (!hovered[hit.object.uuid]) {
             hovered[hit.object.uuid] = hit
             if (hit.object.onPointerOver) hit.object.onPointerOver(hit)
         }
+
         // call onPointerMove
         if (hit.object.onPointerMove) hit.object.onPointerMove(hit)
     })
+
 
     render();
 })
@@ -474,8 +605,8 @@ scene.add(dirLight);
 // const helper = new THREE.CameraHelper(dirLight.shadow.camera)
 // scene.add(helper)
 
-// const ambLight = new THREE.AmbientLight(0x404040, .5); // soft white light
-// scene.add(ambLight);
+const ambLight = new THREE.AmbientLight(0xffffff, .7); // soft white light
+scene.add(ambLight);
 
 // const pointLight = new THREE.PointLight(0xffffff, 1, 100);
 // pointLight.position.set(0, 0, 5);
@@ -486,11 +617,11 @@ scene.add(dirLight);
 
 
 // ----------------------- BACKGROUND
-const backgroundTex = new THREE.TextureLoader().load(assetsDir + "pano2-blur-crop.jpg");
-backgroundTex.mapping = THREE.EquirectangularReflectionMapping;
-scene.background = backgroundTex;
-scene.environment = backgroundTex;
-
+// const backgroundTex = new THREE.TextureLoader().load(assetsDir + "pano2-blur-crop.jpg");
+// backgroundTex.mapping = THREE.EquirectangularReflectionMapping;
+// scene.background = backgroundTex;
+// scene.environment = backgroundTex;
+scene.background = new THREE.Color(bgColor)
 
 // ----------------------- MAP
 var map = null;
@@ -627,7 +758,7 @@ class Glyph extends THREE.Mesh {
 
 
 
-    onPointerOver(e) {
+    onPointerOver() {
 
         if (!overlay) {
             new TWEEN.Tween(this.scale)
@@ -649,7 +780,7 @@ class Glyph extends THREE.Mesh {
 
     }
 
-    onPointerOut(e) {
+    onPointerOut() {
 
         new TWEEN.Tween(this.scale)
             .to(
@@ -731,7 +862,7 @@ if (guiActive) {
         dirLightIntensity: .25,
         ambLightIntensity: .5,
         // myFunction: function() { alert( 'hi' ) }
-        clearColor: 0x111111,
+        clearColor: 0x6b135d,
     }
     gui.add(params, 'dirLightIntensity', 0, 2).onChange(value => {
         dirLight.intensity = value;
