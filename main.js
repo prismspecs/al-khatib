@@ -2,8 +2,15 @@
 
     TO DO:
     + only closest glyph is activated
-    + load data from WP
-        + https://al-khatib-glossar.com/wp-json/wp/v2/glossary_entry
+    + add option to link related mentries together
+    + formatting: superscript, highlighting, crossouts...
+    + change starting zoom position
+    + maximum zoom in/out
+    + maximum rotation for map (so one cant see all the way behind it)
+    + turn up opacity on overlay
+    + narrower text column for layover
+    + make overlay 2/3 as big?
+    + add some kind of info entry/link for collective, ie an About section
 
 */
 
@@ -26,9 +33,18 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 // import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 
+
+
+
+
+
+
+
+
+
 // ----------------------- DOM
 const divLanding = document.getElementById("landing");
-const divDebug = document.getElementById("info");
+// const divDebug = document.getElementById("info");
 const divOverlay = document.getElementById("overlay-outer");
 const divTitle = document.getElementById("overlay-title");
 const divDescription = document.getElementById("overlay-description");
@@ -44,11 +60,53 @@ for (var i = 0; i < overlayClosers.length; i++) {
     }, false);
 }
 
+const langArabic = document.getElementById("overlay-language-arabic");
+const langGerman = document.getElementById("overlay-language-german");
+const langEnglish = document.getElementById("overlay-language-english");
+
+// listeners for languag selection
+langArabic.addEventListener('click', function () {
+    activeLanguage = "arabic";
+    setInfo(activeGlyph.htmlData);
+    langGerman.classList.remove("active");
+    langEnglish.classList.remove("active");
+    this.classList.add("active");
+
+}, false);
+langGerman.addEventListener('click', function () {
+    activeLanguage = "german";
+    setInfo(activeGlyph.htmlData);
+    langArabic.classList.remove("active");
+    langEnglish.classList.remove("active");
+    this.classList.add("active");
+
+}, false);
+langEnglish.addEventListener('click', function () {
+    activeLanguage = "english";
+    setInfo(activeGlyph.htmlData);
+    langGerman.classList.remove("active");
+    langArabic.classList.remove("active");
+    this.classList.add("active");
+
+}, false);
+
 divLanding.style.display = "none";
-divDebug.style.display = "none";
+// divDebug.style.display = "none";
+
+
+
+
+
+
+
+
+
+
 
 // ----------------------- FLAGS, OPTIONS
 // THREE.ColorManagement.legacyMode = false;
+const localTesting = false;
+let activeLanguage = "german";
 const glyphScale = 1.8;
 const activeGlyphScale = 2;
 const gInactiveColor = new THREE.Color(0xdd3333);
@@ -59,6 +117,7 @@ const guiActive = false;
 const bypassComposer = false;
 const shadowMapSize = 2056;
 const bgColor = new THREE.Color(0xee7edc);
+let activeGlyph = null;
 
 // ----------------------- STATS
 const stats = new Stats();
@@ -66,17 +125,21 @@ stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild(stats.dom);
 
 // ----------------------- DATA
-const assetsPrepend = "";
-// assetsPrepend = "https://al-khatib-glossar.com/wp-content/themes/blankslate/";
+let assetsPrepend = "";
+
+if (!localTesting) {
+    assetsPrepend = "https://al-khatib-glossar.com/wp-content/themes/blankslate/";
+}
 
 const assetsDir = assetsPrepend + "map-assets/";
 const glyphDir = assetsDir + "/glyphs_jpg/";
 
 
-
 const glyphDataX = [];
 // retrieve the glossary posts data
-const fetchURL = "https://al-khatib-glossar.com/wp-json/wp/v2/posts?categories=2&acf_format=standard&_embed";
+// const fetchURL = "https://al-khatib-glossar.com/wp-json/wp/v2/posts?categories=2&acf_format=standard&_embed";
+const fetchURL = "https://al-khatib-glossar.com/wp-json/wp/v2/posts?categories=2&acf_format=standard&_embed&" + (new Date()).getTime();
+
 // _embed gives the additional featured image data, acf_format=standard gives full json data for acf
 
 fetch(fetchURL)
@@ -88,28 +151,35 @@ fetch(fetchURL)
         data.forEach(obj => {
 
             // console.log("acf:");
-            console.log(obj._embedded['wp:featuredmedia'][0].media_details.sizes.full.source_url);
+            // console.log(obj._embedded['wp:featuredmedia'][0].media_details.sizes.full.source_url);
+            console.log(obj.acf);
 
             const j = {
                 "id": obj.id,
                 "image": obj._embedded['wp:featuredmedia'][0].media_details.sizes.full.source_url,
                 "URL": obj.link,
                 "title": obj.title.rendered,
+
                 // "postData": obj.content.rendered,
                 "position": {
-                    "x": obj.acf.position.x,
-                    "y": obj.acf.position.y,
-                    "z": obj.acf.position.z,
+                    "x": parseFloat(obj.acf.position.x),
+                    "y": parseFloat(obj.acf.position.y),
+                    "z": parseFloat(obj.acf.position.z),
                 },
                 "rotation": {
-                    "x": obj.acf.rotation.x,
-                    "y": obj.acf.rotation.y,
-                    "z": obj.acf.rotation.z,
+                    "x": parseFloat(obj.acf.rotation.x),
+                    "y": parseFloat(obj.acf.rotation.y),
+                    "z": parseFloat(obj.acf.rotation.z),
                 },
                 "post": {
                     "english": obj.acf.english,
                     "german": obj.acf.german,
                     "arabic": obj.acf.arabic,
+                },
+                "description": {
+                    "english": obj.acf.description.english,
+                    "german": obj.acf.description.german,
+                    "arabic": obj.acf.description.arabic,
                 },
                 "author": obj.acf.author,
             };
@@ -123,10 +193,35 @@ fetch(fetchURL)
             // console.log('-------------------');
         });
 
+
+        let glyphs = [];
+        if (localTesting) {
+            for (let i = 0; i < glyphData.length; i++) {
+
+                console.log("adding");
+                console.log(glyphData[i]);
+                glyphs[i] = new Glyph(glyphData[i]);
+                scene.add(glyphs[i]);
+                raycastLayer.push(glyphs[i]);   // add this to what gets checked by raycast
+
+            }
+        } else {
+            for (let i = 0; i < glyphDataX.length; i++) {
+
+                console.log("adding");
+                console.log(glyphDataX[i]);
+                glyphs[i] = new Glyph(glyphDataX[i]);
+                scene.add(glyphs[i]);
+                raycastLayer.push(glyphs[i]);   // add this to what gets checked by raycast
+
+            }
+        }
+
+
     }).catch(err => console.error(err));
 
-console.log("glyph data:");
-console.log(glyphDataX);
+// console.log("glyph dataX:");
+// console.log(glyphDataX);
 
 
 const glyphData =
@@ -139,6 +234,7 @@ const glyphData =
             "description": "description 1",
             "position": { x: -4.0, y: 3.7, z: .5 },
             "scale": { x: 1, y: 1, z: 1 },
+
         },
         {
             "image": glyphDir + 'glyph_2.jpg',
@@ -413,14 +509,15 @@ const glyphData =
             "rotation": { x: 0, y: 0, z: 0 },
         },
     ];
-
+// console.log("glyph data:");
+// console.log(glyphData);
 // ----------------------- SCENE
 const scene = new THREE.Scene();
 
 // ----------------------- CAMERA
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, .1, 10000);
 // const camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, .1, 55 );
-camera.position.set(0, 0, 5);
+camera.position.set(0, 0, 10);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -658,12 +755,15 @@ loader.load(assetsDir + "map-2048.glb", function (gltf) {
 class Glyph extends THREE.Mesh {
     constructor(data) {
 
+        // console.log("creating new glyph with data:");
+        // console.log(data);
+
         super()
 
         this.position.set(data.position.x, data.position.y, data.position.z);
 
         if (data.rotation) {
-            this.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
+            this.rotation.set(degToRad(data.rotation.x), degToRad(data.rotation.y), degToRad(data.rotation.z));
         }
 
         this.isActive = false;
@@ -752,8 +852,10 @@ class Glyph extends THREE.Mesh {
         this.htmlData = [];
         this.htmlData.URL = data.URL;
         this.htmlData.title = data.title;
-        this.htmlData.description = data.description;
 
+        this.htmlData.post = data.post;
+        this.htmlData.description = data.description;
+        this.htmlData.author = data.author;
     }
 
 
@@ -803,25 +905,16 @@ class Glyph extends THREE.Mesh {
         this.isActive = !this.isActive;
 
         // glyphLight.position.copy(this.position);
-
-        setInfo(this.htmlData);
+        activeGlyph = this;
+        overlay = true;
+        fadeIn(divOverlay);
+        setInfo(activeGlyph.htmlData);
 
         render();
     }
-
-
 }
 
 
-
-let glyphs = [];
-for (let i = 0; i < glyphData.length; i++) {
-
-    glyphs[i] = new Glyph(glyphData[i]);
-    scene.add(glyphs[i]);
-    raycastLayer.push(glyphs[i]);   // add this to what gets checked by raycast
-
-}
 
 
 // glyph light
@@ -901,20 +994,36 @@ function animate() {
 }
 
 // ----------------------- HELPERS
-function setDebug(text) {
-    if (divDebug != null) {
-        divDebug.textContent = text;
-    }
-}
+
 function setInfo(data) {
     if (data != null) {
 
-        overlay = true;
 
-        console.log(data);
-        fadeIn(divOverlay);
+
         divTitle.innerHTML = data.title;
-        divDescription.innerHTML = data.description;
+
+        langGerman.classList.remove("active");
+        langEnglish.classList.remove("active");
+        langArabic.classList.remove("active");
+
+        switch (activeLanguage) {
+            case ("english"):
+                divContent.innerHTML = data.post.english;
+                divDescription.innerHTML = data.description.english;
+                langEnglish.classList.add("active");
+                break;
+            case ("german"):
+                divContent.innerHTML = data.post.german;
+                divDescription.innerHTML = data.description.german;
+                langGerman.classList.add("active");
+                break;
+            case ("arabic"):
+                divContent.innerHTML = data.post.arabic;
+                divDescription.innerHTML = data.description.arabic;
+                langArabic.classList.add("active");
+                break;
+        }
+
     }
 }
 
