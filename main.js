@@ -2,14 +2,8 @@
 
     TO DO:
     + only closest glyph is activated
-    + add option to link related mentries together
-    + formatting: superscript, highlighting, crossouts...
-    + change starting zoom position
     + maximum zoom in/out
     + maximum rotation for map (so one cant see all the way behind it)
-    + turn up opacity on overlay
-    + narrower text column for layover
-    + make overlay 2/3 as big?
     + add some kind of info entry/link for collective, ie an About section
 
 */
@@ -49,6 +43,7 @@ const divOverlay = document.getElementById("overlay-outer");
 const divTitle = document.getElementById("overlay-title");
 const divDescription = document.getElementById("overlay-description");
 const divContent = document.getElementById("overlay-content");
+const divRelated = document.getElementById("overlay-related");
 
 // const overlayCloser = document.getElementById("overlay-close");
 const overlayClosers = document.getElementsByClassName('overlay-close');
@@ -99,13 +94,10 @@ divLanding.style.display = "none";
 
 
 
-
-
-
-
 // ----------------------- FLAGS, OPTIONS
 // THREE.ColorManagement.legacyMode = false;
 const localTesting = false;
+const DEBUG = true;
 let activeLanguage = "german";
 const glyphScale = 1.8;
 const activeGlyphScale = 2;
@@ -118,6 +110,12 @@ const bypassComposer = false;
 const shadowMapSize = 2056;
 const bgColor = new THREE.Color(0xee7edc);
 let activeGlyph = null;
+const startingZoomLevel = 8;
+
+
+
+
+
 
 // ----------------------- STATS
 const stats = new Stats();
@@ -138,7 +136,7 @@ const glyphDir = assetsDir + "/glyphs_jpg/";
 const glyphDataX = [];
 // retrieve the glossary posts data
 // const fetchURL = "https://al-khatib-glossar.com/wp-json/wp/v2/posts?categories=2&acf_format=standard&_embed";
-const fetchURL = "https://al-khatib-glossar.com/wp-json/wp/v2/posts?categories=2&acf_format=standard&_embed&" + (new Date()).getTime();
+const fetchURL = "https://al-khatib-glossar.com/wp-json/wp/v2/posts?categories=2&acf_format=standard&per_page=100&_embed&" + (new Date()).getTime();
 
 // _embed gives the additional featured image data, acf_format=standard gives full json data for acf
 
@@ -146,44 +144,43 @@ fetch(fetchURL)
     .then(res => res.json())
     .then((data) => {
 
-        console.log('Output: ', data);
+        // console.log('Output: ', data);
 
         data.forEach(obj => {
 
-            // console.log("acf:");
-            // console.log(obj._embedded['wp:featuredmedia'][0].media_details.sizes.full.source_url);
-            console.log(obj.acf);
+            glyphDataX.push(newGlyph(obj));
 
-            const j = {
-                "id": obj.id,
-                "image": obj._embedded['wp:featuredmedia'][0].media_details.sizes.full.source_url,
-                "URL": obj.link,
-                "title": obj.title.rendered,
+            // const glyph = {
+            //     "id": obj.id,
+            //     "image": obj._embedded['wp:featuredmedia'][0].media_details.sizes.full.source_url,
+            //     "URL": obj.link,
+            //     "title": obj.title.rendered,
 
-                // "postData": obj.content.rendered,
-                "position": {
-                    "x": parseFloat(obj.acf.position.x),
-                    "y": parseFloat(obj.acf.position.y),
-                    "z": parseFloat(obj.acf.position.z),
-                },
-                "rotation": {
-                    "x": parseFloat(obj.acf.rotation.x),
-                    "y": parseFloat(obj.acf.rotation.y),
-                    "z": parseFloat(obj.acf.rotation.z),
-                },
-                "post": {
-                    "english": obj.acf.english,
-                    "german": obj.acf.german,
-                    "arabic": obj.acf.arabic,
-                },
-                "description": {
-                    "english": obj.acf.description.english,
-                    "german": obj.acf.description.german,
-                    "arabic": obj.acf.description.arabic,
-                },
-                "author": obj.acf.author,
-            };
-            glyphDataX.push(j);
+            //     // "postData": obj.content.rendered,
+            //     "position": {
+            //         "x": parseFloat(obj.acf.position.x),
+            //         "y": parseFloat(obj.acf.position.y),
+            //         "z": parseFloat(obj.acf.position.z),
+            //     },
+            //     "rotation": {
+            //         "x": parseFloat(obj.acf.rotation.x),
+            //         "y": parseFloat(obj.acf.rotation.y),
+            //         "z": parseFloat(obj.acf.rotation.z),
+            //     },
+            //     "post": {
+            //         "english": obj.acf.english,
+            //         "german": obj.acf.german,
+            //         "arabic": obj.acf.arabic,
+            //     },
+            //     "description": {
+            //         "english": obj.acf.description.english,
+            //         "german": obj.acf.description.german,
+            //         "arabic": obj.acf.description.arabic,
+            //     },
+            //     "author": obj.acf.author,
+            //     "related": obj.acf.related,
+            // };
+            // glyphDataX.push(glyph);
 
             // REMEMBER TO WRAP ROTATION IN degToRad()
 
@@ -198,8 +195,8 @@ fetch(fetchURL)
         if (localTesting) {
             for (let i = 0; i < glyphData.length; i++) {
 
-                console.log("adding");
-                console.log(glyphData[i]);
+                debugg("adding");
+                debugg(glyphData[i]);
                 glyphs[i] = new Glyph(glyphData[i]);
                 scene.add(glyphs[i]);
                 raycastLayer.push(glyphs[i]);   // add this to what gets checked by raycast
@@ -208,8 +205,8 @@ fetch(fetchURL)
         } else {
             for (let i = 0; i < glyphDataX.length; i++) {
 
-                console.log("adding");
-                console.log(glyphDataX[i]);
+                debugg("adding");
+                debugg(glyphDataX[i]);
                 glyphs[i] = new Glyph(glyphDataX[i]);
                 scene.add(glyphs[i]);
                 raycastLayer.push(glyphs[i]);   // add this to what gets checked by raycast
@@ -220,8 +217,7 @@ fetch(fetchURL)
 
     }).catch(err => console.error(err));
 
-// console.log("glyph dataX:");
-// console.log(glyphDataX);
+
 
 
 const glyphData =
@@ -509,15 +505,21 @@ const glyphData =
             "rotation": { x: 0, y: 0, z: 0 },
         },
     ];
-// console.log("glyph data:");
-// console.log(glyphData);
+
+
+function debugg(d) {
+    if (DEBUG) {
+        console.log(d);
+    }
+}
+
 // ----------------------- SCENE
 const scene = new THREE.Scene();
 
 // ----------------------- CAMERA
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, .1, 10000);
 // const camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, .1, 55 );
-camera.position.set(0, 0, 10);
+camera.position.set(0, 0, startingZoomLevel);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -771,26 +773,6 @@ class Glyph extends THREE.Mesh {
         let randCol = new THREE.Color(0xffffff);
         randCol.setHex(Math.random() * 0xffffff);
 
-        // this.receiveShadow = true;
-
-        // OLDSCHOOL METHOD...
-        // const texture = new THREE.TextureLoader().load(data.image);
-        // console.log(texture.image.width);
-        // this.material = new THREE.MeshStandardMaterial({
-        //     map: texture,
-        //     alphaMap: texture,
-        //     alphaTest: .15,
-        //     transparent: true,
-        //     // shadowSide: THREE.DoubleSide,
-        //     opacity: 0,
-        //     side: 2,
-        //     color: randCol,
-        //     // color: 0xeeaaee,
-        //     // toneMapped: false,
-        //     emissive: gInactiveColor,
-        //     emissiveIntensity: 1,
-        // });
-
         // CALLBACK METHOD ...
         // instantiate a loader
         const loader = new THREE.TextureLoader();
@@ -856,6 +838,7 @@ class Glyph extends THREE.Mesh {
         this.htmlData.post = data.post;
         this.htmlData.description = data.description;
         this.htmlData.author = data.author;
+        this.htmlData.related = data.related;
     }
 
 
@@ -995,12 +978,101 @@ function animate() {
 
 // ----------------------- HELPERS
 
+
+function newGlyph(obj) {
+
+    const glyph = {
+        "id": obj.id,
+        "image": obj._embedded['wp:featuredmedia'][0].media_details.sizes.full.source_url,
+        "URL": obj.link,
+        "title": obj.title.rendered,
+
+        // "postData": obj.content.rendered,
+        "position": {
+            "x": parseFloat(obj.acf.position.x),
+            "y": parseFloat(obj.acf.position.y),
+            "z": parseFloat(obj.acf.position.z),
+        },
+        "rotation": {
+            "x": parseFloat(obj.acf.rotation.x),
+            "y": parseFloat(obj.acf.rotation.y),
+            "z": parseFloat(obj.acf.rotation.z),
+        },
+        "post": {
+            "english": obj.acf.english,
+            "german": obj.acf.german,
+            "arabic": obj.acf.arabic,
+        },
+        "description": {
+            "english": obj.acf.description.english,
+            "german": obj.acf.description.german,
+            "arabic": obj.acf.description.arabic,
+        },
+        "author": obj.acf.author,
+        "related": obj.acf.related,
+    };
+
+    return glyph;
+
+}
+
+function getDataFromID(id) {
+
+    for (let i = 0; i < glyphDataX.length; i++) {
+        // console.log(id, glyphDataX[i].id);
+        if (id == glyphDataX[i].id) {
+            // setInfo(glyphDataX[i]);
+            return glyphDataX[i];
+        }
+    }
+
+    return null;
+
+}
+
+function setInfoFromRel(id) {
+    // console.log(getDataFromID(id));
+    setInfo(getDataFromID(id));
+}
+
 function setInfo(data) {
     if (data != null) {
 
-
-
         divTitle.innerHTML = data.title;
+
+
+        // add related links
+        divRelated.innerHTML = "";
+        if (data.related) {
+
+            divRelated.innerHTML = "Related entries:";
+
+            for (let i = 0; i < data.related.length; i++) {
+
+                console.log(data.related[i]);
+
+                const relID = data.related[i].ID;
+                const relTitle = data.related[i].post_title;
+                const idTag = "rel-" + relID;
+
+                // const relData = getDataFromID(relID);
+                const linkCode = "<a href='javascript:void(0)' id='" + idTag + "'>" + relTitle + "</a>";
+
+                var a = document.createElement('a');
+                var linkText = document.createTextNode(relTitle);
+                a.appendChild(linkText);
+                a.title = "my title text";
+                a.href = "javascript:void(0)";
+                a.id = idTag;
+                divRelated.appendChild(a);
+
+                a.addEventListener('click', function () {
+                    setInfoFromRel(relID);
+                }, false);
+
+            }
+        }
+
 
         langGerman.classList.remove("active");
         langEnglish.classList.remove("active");
