@@ -108,9 +108,9 @@ let overlay = false;
 const guiActive = false;
 const bypassComposer = false;
 const shadowMapSize = 2056;
-const bgColor = new THREE.Color(0x8f4e48);
+const bgColor = new THREE.Color(0xb8635c);  //THREE.Color(0xee7edc);
 let activeGlyph = null;
-const startingZoomLevel = 8;
+const startingZoomLevel = 4;
 
 
 
