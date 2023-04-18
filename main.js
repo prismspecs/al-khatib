@@ -96,7 +96,7 @@ divLanding.style.display = "none";
 
 // ----------------------- FLAGS, OPTIONS
 // THREE.ColorManagement.legacyMode = false;
-const localTesting = false;
+const localTesting = true;
 const DEBUG = true;
 let activeLanguage = "german";
 const glyphScale = 1.8;
@@ -108,7 +108,7 @@ let overlay = false;
 const guiActive = false;
 const bypassComposer = false;
 const shadowMapSize = 2056;
-const bgColor = new THREE.Color(0xee7edc);
+const bgColor = new THREE.Color(0x8f4e48);
 let activeGlyph = null;
 const startingZoomLevel = 8;
 
@@ -938,7 +938,7 @@ if (guiActive) {
         dirLightIntensity: .25,
         ambLightIntensity: .5,
         // myFunction: function() { alert( 'hi' ) }
-        clearColor: 0x6b135d,
+        clearColor: 0xff0000,	// 0x6b135d
     }
     gui.add(params, 'dirLightIntensity', 0, 2).onChange(value => {
         dirLight.intensity = value;
