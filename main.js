@@ -33,14 +33,12 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 
 
-
-
-
 // ----------------------- DOM
 const divLanding = document.getElementById("landing");
 // const divDebug = document.getElementById("info");
 const divOverlay = document.getElementById("overlay-outer");
 const divTitle = document.getElementById("overlay-title");
+const divAuthor = document.getElementById("overlay-author");
 const divDescription = document.getElementById("overlay-description");
 const divContent = document.getElementById("overlay-content");
 const divRelated = document.getElementById("overlay-related");
@@ -96,22 +94,26 @@ divLanding.style.display = "none";
 
 // ----------------------- FLAGS, OPTIONS
 // THREE.ColorManagement.legacyMode = false;
-const localTesting = true;
+const localTesting = false;
 const DEBUG = true;
 let activeLanguage = "german";
 const glyphScale = 1.8;
 const activeGlyphScale = 2;
 const gInactiveColor = new THREE.Color(0xdd3333);
 const gActiveColor = new THREE.Color(0xff0000);
+const emissIntensity = 1;// was 10
 const mapScale = 10;
+const postcardScale = 3;
 let overlay = false;
 const guiActive = false;
 const bypassComposer = false;
 const shadowMapSize = 2056;
 const bgColor = new THREE.Color(0xb8635c);  //THREE.Color(0xee7edc);
 let activeGlyph = null;
-const startingZoomLevel = 4;
-
+const startingZoomLevel = 3;
+const startingXrot = 0;
+const startingYrot = 10;
+const startingZrot = 0;
 
 
 
@@ -149,6 +151,7 @@ fetch(fetchURL)
         data.forEach(obj => {
 
             glyphDataX.push(newGlyph(obj));
+
 
             // const glyph = {
             //     "id": obj.id,
@@ -195,7 +198,7 @@ fetch(fetchURL)
         if (localTesting) {
             for (let i = 0; i < glyphData.length; i++) {
 
-                debugg("adding");
+                debugg("adding from local");
                 debugg(glyphData[i]);
                 glyphs[i] = new Glyph(glyphData[i]);
                 scene.add(glyphs[i]);
@@ -205,7 +208,7 @@ fetch(fetchURL)
         } else {
             for (let i = 0; i < glyphDataX.length; i++) {
 
-                debugg("adding");
+                debugg("adding from REST");
                 debugg(glyphDataX[i]);
                 glyphs[i] = new Glyph(glyphDataX[i]);
                 scene.add(glyphs[i]);
@@ -530,6 +533,11 @@ renderer.setPixelRatio(window.devicePixelRatio);
 // ----------------------- CONTROLS
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.addEventListener('change', render);
+scene.rotation.x = degToRad(startingXrot);
+scene.rotation.y = degToRad(startingYrot);
+scene.rotation.z = degToRad(startingZrot);
+controls.update();
+
 
 // ----------------------- RAYCASTING
 const raycaster = new THREE.Raycaster();
@@ -720,12 +728,18 @@ scene.add(ambLight);
 // backgroundTex.mapping = THREE.EquirectangularReflectionMapping;
 // scene.background = backgroundTex;
 // scene.environment = backgroundTex;
-scene.background = new THREE.Color(bgColor)
+scene.background = new THREE.Color(bgColor);
+
+//Load background texture
+let loader = new THREE.TextureLoader();
+loader.load(assetsDir + "background.jpg", function (texture) {
+    scene.background = texture;
+});
 
 // ----------------------- MAP
 var map = null;
 
-let loader = new GLTFLoader();
+loader = new GLTFLoader();
 loader.load(assetsDir + "map-2048.glb", function (gltf) {
 
     gltf.scene.traverse(function (object) {
@@ -741,6 +755,41 @@ loader.load(assetsDir + "map-2048.glb", function (gltf) {
     map.position.z = 0;
     map.scale.setScalar(mapScale);
     scene.add(map);
+    render();
+
+}, undefined, function (error) {
+
+    console.error(error);
+
+});
+
+
+
+
+
+// ----------------------- POSTCARD
+var postcard = null;
+
+loader = new GLTFLoader();
+loader.load(assetsDir + "postcard.glb", function (gltf) {
+
+    gltf.scene.traverse(function (object) {
+
+        if (object.isMesh) {
+            object.receiveShadow = true;
+            object.castShadow = true;
+        }
+
+    });
+
+    postcard = gltf.scene.children[0];
+    postcard.position.z = -.3;
+    postcard.rotation.x = degToRad(92);
+    postcard.rotation.z = degToRad(178);
+    postcard.rotation.y = degToRad(3);
+    // postcard.scale.setScalar(postcardScale); 
+    scene.add(postcard);
+    raycastLayer.push(postcard);
     render();
 
 }, undefined, function (error) {
@@ -770,8 +819,8 @@ class Glyph extends THREE.Mesh {
 
         this.isActive = false;
 
-        let randCol = new THREE.Color(0xffffff);
-        randCol.setHex(Math.random() * 0xffffff);
+        // let randCol = new THREE.Color(0xffffff);
+        // randCol.setHex(Math.random() * 0xffffff);
 
         // CALLBACK METHOD ...
         // instantiate a loader
@@ -809,7 +858,7 @@ class Glyph extends THREE.Mesh {
                     transparent: true,
                     opacity: 0,
                     side: 2,
-                    color: randCol,
+                    // color: randCol,
                     emissive: gInactiveColor,
                     emissiveIntensity: 1,
                 });
@@ -856,7 +905,7 @@ class Glyph extends THREE.Mesh {
                 .start();
 
             new TWEEN.Tween(this.material)
-                .to({ emissive: gActiveColor, emissiveIntensity: 10, opacity: 1 }, 200)
+                .to({ emissive: gActiveColor, emissiveIntensity: emissIntensity, opacity: 1 }, 200)
                 .easing(TWEEN.Easing.Quadratic.InOut)
                 .start();
         }
@@ -981,6 +1030,8 @@ function animate() {
 
 function newGlyph(obj) {
 
+    // console.log("object", obj);
+
     const glyph = {
         "id": obj.id,
         "image": obj._embedded['wp:featuredmedia'][0].media_details.sizes.full.source_url,
@@ -1039,7 +1090,7 @@ function setInfo(data) {
     if (data != null) {
 
         divTitle.innerHTML = data.title;
-
+        divAuthor.innerHTML = data.author;
 
         // add related links
         divRelated.innerHTML = "";
@@ -1049,7 +1100,7 @@ function setInfo(data) {
 
             for (let i = 0; i < data.related.length; i++) {
 
-                console.log(data.related[i]);
+                // console.log(data.related[i]);
 
                 const relID = data.related[i].ID;
                 const relTitle = data.related[i].post_title;
@@ -1081,17 +1132,17 @@ function setInfo(data) {
         switch (activeLanguage) {
             case ("english"):
                 divContent.innerHTML = data.post.english;
-                divDescription.innerHTML = data.description.english;
+                // divDescription.innerHTML = data.description.english;
                 langEnglish.classList.add("active");
                 break;
             case ("german"):
                 divContent.innerHTML = data.post.german;
-                divDescription.innerHTML = data.description.german;
+                // divDescription.innerHTML = data.description.german;
                 langGerman.classList.add("active");
                 break;
             case ("arabic"):
                 divContent.innerHTML = data.post.arabic;
-                divDescription.innerHTML = data.description.arabic;
+                // divDescription.innerHTML = data.description.arabic;
                 langArabic.classList.add("active");
                 break;
         }
