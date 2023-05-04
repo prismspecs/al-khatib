@@ -84,9 +84,6 @@ langEnglish.addEventListener('click', function () {
 }, false);
 
 divLanding.style.display = "none";
-// divDebug.style.display = "none";
-
-
 
 
 
@@ -95,7 +92,7 @@ divLanding.style.display = "none";
 // ----------------------- FLAGS, OPTIONS
 // THREE.ColorManagement.legacyMode = false;
 const localTesting = false;
-const DEBUG = true;
+const DEBUG = false;
 let activeLanguage = "german";
 const glyphScale = 1.8;
 const activeGlyphScale = 2;
@@ -103,7 +100,8 @@ const gInactiveColor = new THREE.Color(0xdd3333);
 const gActiveColor = new THREE.Color(0xff0000);
 const emissIntensity = 1;// was 10
 const mapScale = 10;
-const postcardScale = 3;
+const postcardScale = 1;
+const activePostcardScale = 1.03;
 let overlay = false;
 const guiActive = false;
 const bypassComposer = false;
@@ -114,6 +112,7 @@ const startingZoomLevel = 3;
 const startingXrot = 0;
 const startingYrot = 10;
 const startingZrot = 0;
+const tweenDuration = 250;
 
 
 
@@ -137,7 +136,6 @@ const glyphDir = assetsDir + "/glyphs_jpg/";
 
 const glyphDataX = [];
 // retrieve the glossary posts data
-// const fetchURL = "https://al-khatib-glossar.com/wp-json/wp/v2/posts?categories=2&acf_format=standard&_embed";
 const fetchURL = "https://al-khatib-glossar.com/wp-json/wp/v2/posts?categories=2&acf_format=standard&per_page=100&_embed&" + (new Date()).getTime();
 
 // _embed gives the additional featured image data, acf_format=standard gives full json data for acf
@@ -152,45 +150,6 @@ fetch(fetchURL)
 
             glyphDataX.push(newGlyph(obj));
 
-
-            // const glyph = {
-            //     "id": obj.id,
-            //     "image": obj._embedded['wp:featuredmedia'][0].media_details.sizes.full.source_url,
-            //     "URL": obj.link,
-            //     "title": obj.title.rendered,
-
-            //     // "postData": obj.content.rendered,
-            //     "position": {
-            //         "x": parseFloat(obj.acf.position.x),
-            //         "y": parseFloat(obj.acf.position.y),
-            //         "z": parseFloat(obj.acf.position.z),
-            //     },
-            //     "rotation": {
-            //         "x": parseFloat(obj.acf.rotation.x),
-            //         "y": parseFloat(obj.acf.rotation.y),
-            //         "z": parseFloat(obj.acf.rotation.z),
-            //     },
-            //     "post": {
-            //         "english": obj.acf.english,
-            //         "german": obj.acf.german,
-            //         "arabic": obj.acf.arabic,
-            //     },
-            //     "description": {
-            //         "english": obj.acf.description.english,
-            //         "german": obj.acf.description.german,
-            //         "arabic": obj.acf.description.arabic,
-            //     },
-            //     "author": obj.acf.author,
-            //     "related": obj.acf.related,
-            // };
-            // glyphDataX.push(glyph);
-
-            // REMEMBER TO WRAP ROTATION IN degToRad()
-
-            // Object.entries(obj).forEach(([key, value]) => {
-            //     console.log(`${key} ${value}`);
-            // });
-            // console.log('-------------------');
         });
 
 
@@ -539,16 +498,27 @@ scene.rotation.z = degToRad(startingZrot);
 controls.update();
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 // ----------------------- RAYCASTING
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
 var raycastLayer = [];
-let hovered = {};
-// let hovered = null;
+// let hovered = {};
+let hovered = null;
 let intersects = [];
 
-let lastHitObjectObject = null;
 
 window.addEventListener('pointermove', (e) => {
 
@@ -556,120 +526,111 @@ window.addEventListener('pointermove', (e) => {
     raycaster.setFromCamera(pointer, camera)
     intersects = raycaster.intersectObjects(raycastLayer, true)
 
+    // console.log(intersects[0].object.uuid, divider.uuid);
+
+    if (intersects.length) {
+
+        const obj = intersects[0].object;
+
+        if (obj.name == "glyph") {
+
+            divider.visible = false;
+
+            // hitting something other than divider...
+            // console.log(obj);
+            if (obj.name == "glyph") {
+
+                if (!obj.isHovered) {
+
+                    // hit a glyph
+                    obj.isHovered = true;
+                    if (obj.onPointerOver) obj.onPointerOver();
+
+                    if (hovered != null) {
+                        if (hovered.onPointerOut) hovered.onPointerOut();
+                        hovered.isHovered = false;
+                    }
+
+                    hovered = obj;
+                }
+            }
+
+        } else if (obj.name == "postcard") {
+
+            // hovering postcard
+            if (!obj.isHovered) {
+
+                obj.isHovered = true;
+
+                if (obj.onPointerOver) obj.onPointerOver();
+
+                if (hovered != null) {
+                    if (hovered.onPointerOut) hovered.onPointerOut();
+                    hovered.isHovered = false;
+                }
+
+                hovered = obj;
+            }
 
 
-    // Just check if value of hovered is the same as intersects[0], 
-    // call onPointerOut if it’s not, then call onPointerOver for intersects[0],
-    // set hovered to intersects[0].)
+        } else {
 
-    // if (intersects.length > 0) {
-    //     const hit = intersects[0];
-    //     if (hovered != hit) {
+            // hovering something, but not glyph
+            if (hovered != null) {
+                if (hovered.onPointerOut) hovered.onPointerOut();
+                hovered.isHovered = false;
+                hovered = null;
+            }
 
-    //         hovered = hit;
-
-    //         if (hovered.object.onPointerOut) {
-    //             // console.log("!");
-    //             hovered.object.onPointerOut(hovered)
-    //         };
-
-    //         if (hit.object.onPointerOver) hit.object.onPointerOver(hit);
-
-
-    //         // console.log(hovered.object.onPointerOut);
-    //     }
-    // } else {
-    //     if (hovered && hovered.object.onPointerOut) {
-    //         // console.log("!");
-    //         hovered.object.onPointerOut(hovered)
-    //     };
-    //     hovered = null;
-    //     // if (hovered.object.onPointerOver) hovered.object.onPointerOut(hit);
-    // }
-
-
-
-    // console.log(intersects.length);
-
-    // remove all but the first (the closest)
-    // if (intersects.length > 0) {
-
-    //     // console.log("hit");
-
-    //     const hit = intersects[0];
-
-    //     console.log(hit);
-
-    //     if(lastHitObjectObject != null) {
-    //         if(hit.object.uuid != lastHitObject.uuid) {
-
-    //             // console.log("!");
-
-    //             lastHitObject.onPointerOut();
-
-    //             hit.object.onPointerOver();
-
-    //             lastHitObject = hit.object;
-
-    //         }
-    //     } else {
-    //         hit.object.onPointerOver();
-    //         lastHitObject = hit.object;
-    //     }
-
-    // } else {
-    //     lastHitObject = null;
-    // }
-
-
-    // if a previously hovered item is not among the hits we must call onPointerOut
-    Object.keys(hovered).forEach((key) => {
-
-        const hit = intersects.find((hit) => hit.object.uuid === key)
-
-        if (hit === undefined) {
-            const hoveredItem = hovered[key]
-            if (hoveredItem.object.onPointerOver) hoveredItem.object.onPointerOut(hoveredItem)
-            delete hovered[key]
-        }
-    })
-
-    intersects.forEach((hit) => {
-
-        // if a hit has not been flagged as hovered we must call onPointerOver
-        if (!hovered[hit.object.uuid]) {
-            hovered[hit.object.uuid] = hit
-            if (hit.object.onPointerOver) hit.object.onPointerOver(hit)
         }
 
-        // call onPointerMove
-        if (hit.object.onPointerMove) hit.object.onPointerMove(hit)
-    })
+    } else {
+        // hovering nothing
+        if (hovered != null) {
+            if (hovered.onPointerOut) hovered.onPointerOut();
+            hovered.isHovered = false;
+            hovered = null;
+        }
 
-
-    render();
+    }
 })
+
+
 
 window.addEventListener('click', (e) => {
 
     if (e.target == renderer.domElement) {
+
+        // if user clicks into area outside the overlay while it is active, exit overlay
         if (overlay) {
             overlay = false;
             fadeOut(divOverlay);
         } else {
-            // update the picking ray with the camera and pointer position
+
             raycaster.setFromCamera(pointer, camera);
-            const intersects = raycaster.intersectObjects(raycastLayer, true);
+            const intersects = raycaster.intersectObjects(raycastLayer, false);
 
-            intersects.forEach((hit) => {
+            if (intersects.length) {
 
-                // console.log(hit);
-                // console.log(hit.point.x + ", " + hit.point.y + ", " + hit.point.z);
+                const obj = intersects[0].object;
 
-                if (hit.object.onClick) {
-                    hit.object.onClick(hit)
+                // do something based on what is clicked...
+                if (obj.name == "divider") {
+
+                } else if (obj.name == "postcard") {
+
+                    // debugg("postcard clicked");
+                    obj.isClicked = true;
+                    if (obj.onClick) obj.onClick(obj);
+
+                } else if (obj.name == "glyph") {
+
+                    obj.isClicked = true;
+                    if (obj.onClick) obj.onClick(obj);
+
                 }
-            })
+            }
+
         }
     } else {
         if (overlay) {
@@ -680,7 +641,15 @@ window.addEventListener('click', (e) => {
         }
     }
 
+    // render();
 })
+
+
+
+
+
+
+
 
 window.addEventListener("keydown", (event) => {
 
@@ -698,6 +667,20 @@ function overlayClose() {
         fadeOut(divOverlay);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // ----------------------- LIGHTING
@@ -787,16 +770,109 @@ loader.load(assetsDir + "postcard.glb", function (gltf) {
     postcard.rotation.x = degToRad(92);
     postcard.rotation.z = degToRad(178);
     postcard.rotation.y = degToRad(3);
-    // postcard.scale.setScalar(postcardScale); 
+    postcard.scale.setScalar(postcardScale);
     scene.add(postcard);
     raycastLayer.push(postcard);
     render();
+
+    postcard.name = "postcard";
+
+
+    postcard.onPointerOver = function () {
+        // hovering postcard
+        // console.log("postcard hover");
+
+        if (!overlay) {
+            new TWEEN.Tween(this.scale)
+                .to(
+                    { x: activePostcardScale, y: activePostcardScale, z: activePostcardScale }, tweenDuration)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .onUpdate(() => {
+                    render();
+                })
+                .start();
+
+        }
+    }
+
+    postcard.onPointerOut = function () {
+        if (!overlay) {
+            new TWEEN.Tween(this.scale)
+                .to(
+                    { x: postcardScale, y: postcardScale, z: postcardScale }, tweenDuration)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .onUpdate(() => {
+                    render();
+                })
+                .start();
+
+        }
+    }
+
+    postcard.onClick = function() {
+
+        // this.isClicked = true;
+        console.log("clicked postcard");
+        overlay = true;
+        fadeIn(divOverlay);
+        setInfo(this.htmlData);
+
+        render();
+    }
+
 
 }, undefined, function (error) {
 
     console.error(error);
 
 });
+
+// postcard data
+const postcardURL = "https://al-khatib-glossar.com/wp-json/wp/v2/pages/462?acf_format=standard&_embed&" + (new Date()).getTime();
+
+
+fetch(postcardURL)
+    .then(res => res.json())
+    .then((data) => {
+
+        // textual/html stuff
+        postcard.htmlData = [];
+        postcard.htmlData.URL = data.link;
+        postcard.htmlData.title = data.title.rendered;
+        postcard.htmlData.post = data.content.rendered;
+        // postcard.htmlData.description = "data.description";
+        // postcard.htmlData.author = data.author;
+        // postcard.htmlData.related = data.related;
+
+        debugg("adding postcard:");
+        debugg(postcard.htmlData);
+
+    }).catch(err => console.error(err));
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ----------------------- DIVIDER PLANE (to disallow clicking thru map)
+const dividerGeometry = new THREE.PlaneGeometry(10, 10);
+const dividerMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffff00,
+    side: THREE.DoubleSide
+});
+const divider = new THREE.Mesh(dividerGeometry, dividerMaterial);
+scene.add(divider);
+divider.name = "divider";
+// divider.visible = false;
+raycastLayer.push(divider);
+
 
 
 
@@ -817,7 +893,9 @@ class Glyph extends THREE.Mesh {
             this.rotation.set(degToRad(data.rotation.x), degToRad(data.rotation.y), degToRad(data.rotation.z));
         }
 
-        this.isActive = false;
+        this.isClicked = false;
+        this.isHovered = false;
+        this.name = "glyph";
 
         // let randCol = new THREE.Color(0xffffff);
         // randCol.setHex(Math.random() * 0xffffff);
@@ -897,7 +975,7 @@ class Glyph extends THREE.Mesh {
         if (!overlay) {
             new TWEEN.Tween(this.scale)
                 .to(
-                    { x: activeGlyphScale, y: activeGlyphScale, z: activeGlyphScale }, 200)
+                    { x: activeGlyphScale, y: activeGlyphScale, z: activeGlyphScale }, tweenDuration)
                 .easing(TWEEN.Easing.Quadratic.InOut)
                 .onUpdate(() => {
                     render();
@@ -905,7 +983,7 @@ class Glyph extends THREE.Mesh {
                 .start();
 
             new TWEEN.Tween(this.material)
-                .to({ emissive: gActiveColor, emissiveIntensity: emissIntensity, opacity: 1 }, 200)
+                .to({ emissive: gActiveColor, emissiveIntensity: emissIntensity, opacity: 1 }, tweenDuration)
                 .easing(TWEEN.Easing.Quadratic.InOut)
                 .start();
         }
@@ -918,7 +996,7 @@ class Glyph extends THREE.Mesh {
 
         new TWEEN.Tween(this.scale)
             .to(
-                { x: glyphScale, y: glyphScale, z: glyphScale }, 200)
+                { x: glyphScale, y: glyphScale, z: glyphScale }, tweenDuration)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .onUpdate(() => {
                 render();
@@ -926,7 +1004,7 @@ class Glyph extends THREE.Mesh {
             .start();
 
         new TWEEN.Tween(this.material)
-            .to({ emissiveIntensity: 1, emissive: gInactiveColor, opacity: 0 }, 200)
+            .to({ emissiveIntensity: 1, emissive: gInactiveColor, opacity: 0 }, tweenDuration)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .start();
 
@@ -934,7 +1012,9 @@ class Glyph extends THREE.Mesh {
 
     onClick(e) {
 
-        this.isActive = !this.isActive;
+        // this.isClicked = true;
+
+        console.log("clicked a glyph");
 
         // glyphLight.position.copy(this.position);
         activeGlyph = this;
@@ -1089,11 +1169,15 @@ function setInfoFromRel(id) {
 function setInfo(data) {
     if (data != null) {
 
-        divTitle.innerHTML = data.title;
-        divAuthor.innerHTML = data.author;
+        if(data.title)
+            divTitle.innerHTML = data.title;
+
+        if(data.author)
+            divAuthor.innerHTML = data.author;
 
         // add related links
         divRelated.innerHTML = "";
+
         if (data.related) {
 
             divRelated.innerHTML = "Related entries:";
