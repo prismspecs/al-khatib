@@ -1,10 +1,7 @@
 /*
 
     TO DO:
-    + only closest glyph is activated
-    + maximum zoom in/out
-    + maximum rotation for map (so one cant see all the way behind it)
-    + add some kind of info entry/link for collective, ie an About section
+    + if mouse has been dragging, dont open on click
 
 */
 
@@ -14,23 +11,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+// import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { GammaCorrectionShader } from 'three/addons/shaders/GammaCorrectionShader.js';
+// import { GammaCorrectionShader } from 'three/addons/shaders/GammaCorrectionShader.js';
 import GUI from 'lil-gui';
 import Stats from 'stats.js'
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
 import { degToRad } from 'three/src/math/MathUtils';
-import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
-
-// import { RedFormat } from 'three';
-// import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-
-
-
-
-
-
+// import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 
 // ----------------------- DOM
@@ -87,8 +75,6 @@ divLanding.style.display = "none";
 
 
 
-
-
 // ----------------------- FLAGS, OPTIONS
 // THREE.ColorManagement.legacyMode = false;
 const localTesting = false;
@@ -109,19 +95,22 @@ const shadowMapSize = 2056;
 const bgColor = new THREE.Color(0xb8635c);  //THREE.Color(0xee7edc);
 let activeGlyph = null;
 const startingZoomLevel = 3;
+const maxZoomLevel = 10;
 const startingXrot = 0;
 const startingYrot = 10;
 const startingZrot = 0;
 const tweenDuration = 250;
-
-
+let moved = false;  // keep track of whether user is currently dragging
 
 
 
 // ----------------------- STATS
-const stats = new Stats();
-stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-document.body.appendChild(stats.dom);
+if (DEBUG) {
+    const stats = new Stats();
+    stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+    document.body.appendChild(stats.dom);
+}
+
 
 // ----------------------- DATA
 let assetsPrepend = "";
@@ -495,6 +484,10 @@ controls.addEventListener('change', render);
 scene.rotation.x = degToRad(startingXrot);
 scene.rotation.y = degToRad(startingYrot);
 scene.rotation.z = degToRad(startingZrot);
+controls.minDistance = startingZoomLevel;
+controls.maxDistance = maxZoomLevel;
+controls.minPolarAngle = Math.PI * .2; // radians
+controls.maxPolarAngle = Math.PI * .8; // radians
 controls.update();
 
 
@@ -520,7 +513,13 @@ let hovered = null;
 let intersects = [];
 
 
+var timeout;
 window.addEventListener('pointermove', (e) => {
+
+    clearTimeout(timeout);
+    timeout = setTimeout(function () { moved = false; }, 200);
+
+    moved = true;
 
     pointer.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1)
     raycaster.setFromCamera(pointer, camera)
@@ -595,9 +594,15 @@ window.addEventListener('pointermove', (e) => {
     }
 })
 
+window.addEventListener('mouseup', dragStopped, { passive: false });
 
+function dragStopped() {
+    console.log("drag stopped");
+    moved = false;
+}
 
-window.addEventListener('click', (e) => {
+window.addEventListener('mousedown', (e) => {
+
 
     if (e.target == renderer.domElement) {
 
@@ -809,7 +814,7 @@ loader.load(assetsDir + "postcard.glb", function (gltf) {
         }
     }
 
-    postcard.onClick = function() {
+    postcard.onClick = function () {
 
         // this.isClicked = true;
         console.log("clicked postcard");
@@ -870,7 +875,7 @@ const dividerMaterial = new THREE.MeshBasicMaterial({
 const divider = new THREE.Mesh(dividerGeometry, dividerMaterial);
 scene.add(divider);
 divider.name = "divider";
-// divider.visible = false;
+divider.visible = false;
 raycastLayer.push(divider);
 
 
@@ -1013,16 +1018,18 @@ class Glyph extends THREE.Mesh {
     onClick(e) {
 
         // this.isClicked = true;
+        if (!moved) {
+            console.log("clicked a glyph");
 
-        console.log("clicked a glyph");
+            // glyphLight.position.copy(this.position);
+            activeGlyph = this;
+            overlay = true;
+            fadeIn(divOverlay);
+            setInfo(activeGlyph.htmlData);
 
-        // glyphLight.position.copy(this.position);
-        activeGlyph = this;
-        overlay = true;
-        fadeIn(divOverlay);
-        setInfo(activeGlyph.htmlData);
+            render();
+        }
 
-        render();
     }
 }
 
@@ -1085,7 +1092,11 @@ if (guiActive) {
 render();
 function render() {
 
-    stats.begin();
+    if (DEBUG) stats.begin();
+
+    console.log(moved);
+
+
     if (!overlay) {
         if (bypassComposer) {
             renderer.render(scene, camera);
@@ -1094,8 +1105,7 @@ function render() {
         }
     }
 
-
-    stats.end();
+    if (DEBUG) stats.end();
 }
 
 animate();
@@ -1169,10 +1179,10 @@ function setInfoFromRel(id) {
 function setInfo(data) {
     if (data != null) {
 
-        if(data.title)
+        if (data.title)
             divTitle.innerHTML = data.title;
 
-        if(data.author)
+        if (data.author)
             divAuthor.innerHTML = data.author;
 
         // add related links
