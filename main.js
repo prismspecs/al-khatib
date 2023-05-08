@@ -1,8 +1,8 @@
 /*
 
     TO DO:
-    + if mouse has been dragging, dont open on click
-
+    + landing
+    + fonts https://documentary-architecture.org/
 */
 
 
@@ -23,7 +23,6 @@ import { degToRad } from 'three/src/math/MathUtils';
 
 // ----------------------- DOM
 const divLanding = document.getElementById("landing");
-// const divDebug = document.getElementById("info");
 const divOverlay = document.getElementById("overlay-outer");
 const divTitle = document.getElementById("overlay-title");
 const divAuthor = document.getElementById("overlay-author");
@@ -71,14 +70,13 @@ langEnglish.addEventListener('click', function () {
 
 }, false);
 
-divLanding.style.display = "none";
 
 
 
 // ----------------------- FLAGS, OPTIONS
 // THREE.ColorManagement.legacyMode = false;
 const localTesting = false;
-const DEBUG = false;
+const DEBUG = true;
 let activeLanguage = "german";
 const glyphScale = 1.8;
 const activeGlyphScale = 2;
@@ -101,18 +99,10 @@ const startingYrot = 10;
 const startingZrot = 0;
 const tweenDuration = 250;
 let moved = false;  // keep track of whether user is currently dragging
+const mouseTimeoutDuration = 130;
+const enableAA = false;
+const skipLanding = false;
 
-
-
-// ----------------------- STATS
-if (DEBUG) {
-    const stats = new Stats();
-    stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-    document.body.appendChild(stats.dom);
-}
-
-
-// ----------------------- DATA
 let assetsPrepend = "";
 
 if (!localTesting) {
@@ -120,359 +110,36 @@ if (!localTesting) {
 }
 
 const assetsDir = assetsPrepend + "map-assets/";
-const glyphDir = assetsDir + "/glyphs_jpg/";
 
 
-const glyphDataX = [];
-// retrieve the glossary posts data
-const fetchURL = "https://al-khatib-glossar.com/wp-json/wp/v2/posts?categories=2&acf_format=standard&per_page=100&_embed&" + (new Date()).getTime();
-
-// _embed gives the additional featured image data, acf_format=standard gives full json data for acf
-
-fetch(fetchURL)
-    .then(res => res.json())
-    .then((data) => {
-
-        // console.log('Output: ', data);
-
-        data.forEach(obj => {
-
-            glyphDataX.push(newGlyph(obj));
-
-        });
-
-
-        let glyphs = [];
-        if (localTesting) {
-            for (let i = 0; i < glyphData.length; i++) {
-
-                debugg("adding from local");
-                debugg(glyphData[i]);
-                glyphs[i] = new Glyph(glyphData[i]);
-                scene.add(glyphs[i]);
-                raycastLayer.push(glyphs[i]);   // add this to what gets checked by raycast
-
-            }
-        } else {
-            for (let i = 0; i < glyphDataX.length; i++) {
-
-                debugg("adding from REST");
-                debugg(glyphDataX[i]);
-                glyphs[i] = new Glyph(glyphDataX[i]);
-                scene.add(glyphs[i]);
-                raycastLayer.push(glyphs[i]);   // add this to what gets checked by raycast
-
-            }
-        }
-
-
-    }).catch(err => console.error(err));
+if (skipLanding)
+    divLanding.style.display = "none";
 
 
 
 
-const glyphData =
-    [
-        {
-            "image": glyphDir + 'glyph_1.jpg',
-            // "image": assetsDir + 'glyph-test.png',
-            "URL": "https://www.example.com/object.obj",
-            "title": "The Title1",
-            "description": "description 1",
-            "position": { x: -4.0, y: 3.7, z: .5 },
-            "scale": { x: 1, y: 1, z: 1 },
-
-        },
-        {
-            "image": glyphDir + 'glyph_2.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title2",
-            "description": "another description",
-            "position": { x: 3.92, y: 4, z: .5 },
-            "rotation": { x: degToRad(10), y: degToRad(-15), z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_3.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title3",
-            "description": "another description",
-            "position": { x: -0.35, y: 2.70, z: .4 },
-            "rotation": { x: degToRad(-10), y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_4.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title4",
-            "description": "another description4",
-            "position": { x: 1.05, y: -3.85, z: .2 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_5.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 5",
-            "description": "another description 5",
-            "position": { x: 4.0, y: -3.8, z: .5 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_6.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 6",
-            "description": "another description 6",
-            "position": { x: -4.09, y: -1.86, z: .5 },
-            "rotation": { x: degToRad(-12), y: 0, z: degToRad(-8) },
-        },
-        {
-            "image": glyphDir + 'glyph_7.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 7",
-            "description": "another description 7",
-            "position": { x: 4.3, y: 0.68, z: .55 },
-            "rotation": { x: 0, y: degToRad(18), z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_8.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 8",
-            "description": "another description 8",
-            "position": { x: -2.34, y: 1.1, z: .4 },
-            "rotation": { x: degToRad(10), y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_9.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 9",
-            "description": "another description 9",
-            "position": { x: 4.0, y: 2.3, z: .5 },
-            "rotation": { x: degToRad(-10), y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_10.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 10",
-            "description": "another description 10",
-            "position": { x: -0.61, y: -3.69, z: .35 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_11.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 11",
-            "description": "another description 11",
-            "position": { x: -3.16, y: 2.74, z: .55 },
-            "rotation": { x: degToRad(-6), y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_12.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 12",
-            "description": "another description 12",
-            "position": { x: -1.79, y: 3.96, z: .3 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_13.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 13",
-            "description": "another description 13",
-            "position": { x: 1.95, y: 0.48, z: .3 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_14.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 14",
-            "description": "another description 14",
-            "position": { x: 3.0, y: 1.28, z: .6 },
-            "rotation": { x: 0, y: degToRad(-11), z: degToRad(-6) },
-        },
-        {
-            "image": glyphDir + 'glyph_15.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 15",
-            "description": "another description 15",
-            "position": { x: 0.38, y: -1.86, z: .4 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_16.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 16",
-            "description": "another description 16",
-            "position": { x: -4.13, y: 1.37, z: .5 },
-            "rotation": { x: 0, y: degToRad(7), z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_17.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 17",
-            "description": "another description 17",
-            "position": { x: 1.47, y: -0.86, z: .35 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_18.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 18",
-            "description": "another description 18",
-            "position": { x: -1.18, y: -1.38, z: .35 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_19.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 19",
-            "description": "another description 19",
-            "position": { x: -1.86, y: -2.56, z: .5 },
-            "rotation": { x: 0, y: 0, z: degToRad(-28) },
-        },
-        {
-            "image": glyphDir + 'glyph_20.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 20",
-            "description": "another description 20",
-            "position": { x: 2.62, y: -3.7, z: .35 },
-            "rotation": { x: 0, y: 0, z: degToRad(-8) },
-        },
-        {
-            "image": glyphDir + 'glyph_21.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 21",
-            "description": "another description 21",
-            "position": { x: 4.5, y: -1.5, z: .4 },
-            "rotation": { x: 0, y: degToRad(15), z: degToRad(-90) },
-        },
-        {
-            "image": glyphDir + 'glyph_23.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 22",
-            "description": "another description 22",
-            "position": { x: 2.2, y: 3.1, z: .3 },
-            "rotation": { x: 0, y: 0, z: degToRad(-7) },
-        },
-        {
-            "image": glyphDir + 'glyph_23.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 23",
-            "description": "another description 23",
-            "position": { x: -3.60, y: 0.30, z: .3 },
-            "rotation": { x: 0, y: 0, z: degToRad(50) },
-        },
-        {
-            "image": glyphDir + 'glyph_24.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 24",
-            "description": "another description 24",
-            "position": { x: -3.6, y: -3.24, z: .3 },
-            "rotation": { x: degToRad(10), y: 0, z: degToRad(-30) },
-        },
-        {
-            "image": glyphDir + 'glyph_25.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 25",
-            "description": "another description 25",
-            "position": { x: 1.69, y: 1.93, z: .35 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_26.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 26",
-            "description": "another description 26",
-            "position": { x: 1.47, y: -2.46, z: .35 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_27.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 27",
-            "description": "another description 27",
-            "position": { x: -2.17, y: -3.83, z: .25 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_28.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 28",
-            "description": "another description 28",
-            "position": { x: -1.93, y: 2.2, z: .45 },
-            "rotation": { x: 0, y: 0, z: degToRad(-5) },
-        },
-        {
-            "image": glyphDir + 'glyph_29.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 29",
-            "description": "another description 29",
-            "position": { x: -2.7, y: -1.03, z: .35 },
-            "rotation": { x: degToRad(-13), y: 0, z: degToRad(10) },
-        },
-        {
-            "image": glyphDir + 'glyph_30.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 30",
-            "description": "another description 30",
-            "position": { x: 0.06, y: 1.18, z: .35 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_31.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 31",
-            "description": "another description 31",
-            "position": { x: 3.34, y: -0.30, z: .5 },
-            "rotation": { x: 0, y: degToRad(-13), z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_32.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 32",
-            "description": "another description 32",
-            "position": { x: 3.24, y: -2.34, z: .55 },
-            "rotation": { x: 0, y: degToRad(-13), z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_33.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 33",
-            "description": "another description 33",
-            "position": { x: -0.24, y: -0.68, z: .40 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_34.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 34",
-            "description": "another description 34",
-            "position": { x: -2.08, y: -0.03, z: .35 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-        {
-            "image": glyphDir + 'glyph_35.jpg',
-            "URL": "https://www.google.com",
-            "title": "The Title 35",
-            "description": "another description 35",
-            "position": { x: 0.97, y: 3.7, z: .4 },
-            "rotation": { x: 0, y: 0, z: 0 },
-        },
-    ];
 
 
-function debugg(d) {
-    if (DEBUG) {
-        console.log(d);
-    }
+// ----------------------- STATS
+let stats;
+if (DEBUG) {
+    stats = new Stats();
+    stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+    document.body.appendChild(stats.dom);
 }
+
+
+
+
 
 // ----------------------- SCENE
 const scene = new THREE.Scene();
 
 // ----------------------- CAMERA
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, .1, 10000);
-// const camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, .1, 55 );
 camera.position.set(0, 0, startingZoomLevel);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: enableAA });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(bgColor);
 document.body.appendChild(renderer.domElement);
@@ -517,7 +184,7 @@ var timeout;
 window.addEventListener('pointermove', (e) => {
 
     clearTimeout(timeout);
-    timeout = setTimeout(function () { moved = false; }, 200);
+    timeout = setTimeout(function () { moved = false; }, mouseTimeoutDuration);
 
     moved = true;
 
@@ -603,6 +270,24 @@ function dragStopped() {
 
 window.addEventListener('mousedown', (e) => {
 
+    console.log(e.target + " was clicked");
+
+    if (e.target == divOverlay) {
+        console.log("outer overlay clicked");
+
+        // here
+        if (e.target != divOverlay)
+            return;
+
+        if (overlay) {
+            overlay = false;
+            fadeOut(divOverlay);
+            moved = false;
+            render();
+        }
+
+    }
+
 
     if (e.target == renderer.domElement) {
 
@@ -610,6 +295,8 @@ window.addEventListener('mousedown', (e) => {
         if (overlay) {
             overlay = false;
             fadeOut(divOverlay);
+            moved = false;
+            render();
         } else {
 
             raycaster.setFromCamera(pointer, camera);
@@ -662,6 +349,7 @@ window.addEventListener("keydown", (event) => {
 
     if (event.code === "Escape") {
         overlayClose();
+
     }
 });
 
@@ -670,6 +358,7 @@ function overlayClose() {
     if (overlay) {
         overlay = false;
         fadeOut(divOverlay);
+        moved = false;
     }
 }
 
@@ -832,19 +521,92 @@ loader.load(assetsDir + "postcard.glb", function (gltf) {
 
 });
 
-// postcard data
-const postcardURL = "https://al-khatib-glossar.com/wp-json/wp/v2/pages/462?acf_format=standard&_embed&" + (new Date()).getTime();
 
 
-fetch(postcardURL)
+
+
+// ----------------------- DATA
+
+
+
+const glyphDataX = [];
+// retrieve the glossary posts data
+const fetchGlyphsURL = "https://al-khatib-glossar.com/wp-json/wp/v2/posts?categories=2&per_page=100&_embed&" + (new Date()).getTime();
+const fetchPostcardURL = "https://al-khatib-glossar.com/wp-json/wp/v2/pages/462?" + (new Date()).getTime();
+
+// _embed gives the additional featured image data, acf_format=standard gives full json data for acf
+
+fetch(fetchGlyphsURL)
     .then(res => res.json())
     .then((data) => {
 
+        // console.log('Output: ', data);
+
+        data.forEach(obj => {
+
+            glyphDataX.push(newGlyph(obj));
+
+        });
+
+
+        let glyphs = [];
+        if (localTesting) {
+            for (let i = 0; i < glyphData.length; i++) {
+
+                debugg("adding from local");
+                debugg(glyphData[i]);
+                glyphs[i] = new Glyph(glyphData[i]);
+                scene.add(glyphs[i]);
+                raycastLayer.push(glyphs[i]);   // add this to what gets checked by raycast
+
+            }
+        } else {
+            for (let i = 0; i < glyphDataX.length; i++) {
+
+                debugg("adding from REST");
+                debugg(glyphDataX[i]);
+                glyphs[i] = new Glyph(glyphDataX[i]);
+                scene.add(glyphs[i]);
+                raycastLayer.push(glyphs[i]);   // add this to what gets checked by raycast
+
+            }
+        }
+
+
+    }).catch(err => console.error(err));
+
+
+function debugg(d) {
+    if (DEBUG) {
+        console.log(d);
+    }
+}
+
+
+
+
+
+// postcard data
+
+fetch(fetchPostcardURL)
+    .then(res => res.json())
+    .then((data) => {
+
+        // console.log("got postcard data:");
+        // console.log(data);
+
         // textual/html stuff
         postcard.htmlData = [];
-        postcard.htmlData.URL = data.link;
-        postcard.htmlData.title = data.title.rendered;
-        postcard.htmlData.post = data.content.rendered;
+
+        if (data.link)
+            postcard.htmlData.URL = data.link;
+
+        if (data.title.rendered)
+            postcard.htmlData.title = data.title.rendered;
+
+        if (data.content.rendered)
+            postcard.htmlData.post = data.content.rendered;
+
         // postcard.htmlData.description = "data.description";
         // postcard.htmlData.author = data.author;
         // postcard.htmlData.related = data.related;
@@ -855,7 +617,21 @@ fetch(postcardURL)
     }).catch(err => console.error(err));
 
 
+// const fetchData = async () => {
+//     try {
+//         const responsesJSON = await Promise.all([
+//             fetch(fetchGlyphsURL),
+//             fetch(fetchPostcardURL)
+//         ]);
+//         const [todoOne, todoTwo] = await Promise.all(responsesJSON.map(r => r.json()));
+//         console.log(todoOne, 'todoOne');
+//         console.log(todoTwo, 'todoTwo');
+//     } catch (err) {
+//         throw err;
+//     }
+// };
 
+// fetchData();
 
 
 
@@ -1019,7 +795,7 @@ class Glyph extends THREE.Mesh {
 
         // this.isClicked = true;
         if (!moved) {
-            console.log("clicked a glyph");
+            // console.log("clicked a glyph");
 
             // glyphLight.position.copy(this.position);
             activeGlyph = this;
