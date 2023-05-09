@@ -3,6 +3,8 @@
     TO DO:
     + landing
     + fonts https://documentary-architecture.org/
+    + keep track of how many pixels mouse has moved on drag... threshold
+        it should only fire on mouseup, and if the mouse hasnt moved more than X pixels
 */
 
 
@@ -115,7 +117,7 @@ const assetsDir = assetsPrepend + "map-assets/";
 if (skipLanding)
     divLanding.style.display = "none";
 
-
+let mouseX, mouseY = 0;
 
 
 
@@ -182,6 +184,18 @@ let intersects = [];
 
 var timeout;
 window.addEventListener('pointermove', (e) => {
+
+
+    // check distance
+    // const x2 = e.clientX;
+    // const y2 = e.clientY;
+
+    // const dist = distance(mouseX, mouseY, x2, y2);
+    // if(dist < 2) moved = false;
+
+    // debugg("mouse move distance " + dist);
+
+
 
     clearTimeout(timeout);
     timeout = setTimeout(function () { moved = false; }, mouseTimeoutDuration);
@@ -263,17 +277,23 @@ window.addEventListener('pointermove', (e) => {
 
 window.addEventListener('mouseup', dragStopped, { passive: false });
 
-function dragStopped() {
-    console.log("drag stopped");
+function dragStopped(e) {
+    debugg("drag stopped");
     moved = false;
+
+    
 }
 
 window.addEventListener('mousedown', (e) => {
 
-    console.log(e.target + " was clicked");
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    debugg("mouseloc " + mouseX + ", " + mouseY);
+
+    debugg(e.target + " was clicked");
 
     if (e.target == divOverlay) {
-        console.log("outer overlay clicked");
+        // console.log("outer overlay clicked");
 
         // here
         if (e.target != divOverlay)
@@ -293,10 +313,7 @@ window.addEventListener('mousedown', (e) => {
 
         // if user clicks into area outside the overlay while it is active, exit overlay
         if (overlay) {
-            overlay = false;
-            fadeOut(divOverlay);
-            moved = false;
-            render();
+            overlayClose();
         } else {
 
             raycaster.setFromCamera(pointer, camera);
@@ -333,11 +350,8 @@ window.addEventListener('mousedown', (e) => {
         }
     }
 
-    // render();
+    render();
 })
-
-
-
 
 
 
@@ -359,11 +373,15 @@ function overlayClose() {
         overlay = false;
         fadeOut(divOverlay);
         moved = false;
+        render();
+
+        document.querySelectorAll('audio').forEach(el => el.pause());
+        document.querySelectorAll('video').forEach(vid => vid.pause());
     }
 }
 
 
-
+const distance = (mouseX, mouseY, x2, y2) => Math.hypot(x2 - mouseX, y2 - mouseY); 
 
 
 
@@ -532,17 +550,29 @@ loader.load(assetsDir + "postcard.glb", function (gltf) {
 const glyphDataX = [];
 // retrieve the glossary posts data
 const fetchGlyphsURL = "https://al-khatib-glossar.com/wp-json/wp/v2/posts?categories=2&per_page=100&_embed&" + (new Date()).getTime();
-const fetchPostcardURL = "https://al-khatib-glossar.com/wp-json/wp/v2/pages/462?" + (new Date()).getTime();
+const fetchPostcardURL = "https://al-khatib-glossar.com/wp-json/wp/v2/pages/462";
 
 // _embed gives the additional featured image data, acf_format=standard gives full json data for acf
 
-fetch(fetchGlyphsURL)
-    .then(res => res.json())
-    .then((data) => {
+function debugg(d) {
+    if (DEBUG) {
+        console.log(d);
+    }
+}
 
-        // console.log('Output: ', data);
 
-        data.forEach(obj => {
+
+const fetchData = async () => {
+    try {
+        const responsesJSON = await Promise.all([
+            fetch(fetchGlyphsURL),
+            fetch(fetchPostcardURL)
+        ]);
+        const [fetchedGlyphs, fetchedPostcard] = await Promise.all(responsesJSON.map(r => r.json()));
+
+        console.log(fetchedGlyphs, 'fetchedGlyphs');
+
+        fetchedGlyphs.forEach(obj => {
 
             glyphDataX.push(newGlyph(obj));
 
@@ -573,39 +603,21 @@ fetch(fetchGlyphsURL)
         }
 
 
-    }).catch(err => console.error(err));
+        console.log(fetchedPostcard, 'fetchedPostcard');
+        console.log(fetchedPostcard.link, fetchedPostcard.title.rendered, fetchedPostcard.content.rendered);
 
-
-function debugg(d) {
-    if (DEBUG) {
-        console.log(d);
-    }
-}
-
-
-
-
-
-// postcard data
-
-fetch(fetchPostcardURL)
-    .then(res => res.json())
-    .then((data) => {
-
-        // console.log("got postcard data:");
-        // console.log(data);
-
-        // textual/html stuff
         postcard.htmlData = [];
 
-        if (data.link)
-            postcard.htmlData.URL = data.link;
+        if (fetchedPostcard.link)
+            postcard.htmlData.URL = fetchedPostcard.link;
 
-        if (data.title.rendered)
-            postcard.htmlData.title = data.title.rendered;
+        if (fetchedPostcard.title.rendered)
+            postcard.htmlData.title = fetchedPostcard.title.rendered;
 
-        if (data.content.rendered)
-            postcard.htmlData.post = data.content.rendered;
+        if (fetchedPostcard.content.rendered)
+            postcard.htmlData.post = fetchedPostcard.content.rendered;
+
+
 
         // postcard.htmlData.description = "data.description";
         // postcard.htmlData.author = data.author;
@@ -614,24 +626,13 @@ fetch(fetchPostcardURL)
         debugg("adding postcard:");
         debugg(postcard.htmlData);
 
-    }).catch(err => console.error(err));
 
+    } catch (err) {
+        throw err;
+    }
+};
 
-// const fetchData = async () => {
-//     try {
-//         const responsesJSON = await Promise.all([
-//             fetch(fetchGlyphsURL),
-//             fetch(fetchPostcardURL)
-//         ]);
-//         const [todoOne, todoTwo] = await Promise.all(responsesJSON.map(r => r.json()));
-//         console.log(todoOne, 'todoOne');
-//         console.log(todoTwo, 'todoTwo');
-//     } catch (err) {
-//         throw err;
-//     }
-// };
-
-// fetchData();
+fetchData();
 
 
 
