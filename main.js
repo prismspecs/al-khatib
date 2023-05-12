@@ -1,10 +1,19 @@
 /*
 
     TO DO:
-    + landing
-    + fonts https://documentary-architecture.org/
     + keep track of how many pixels mouse has moved on drag... threshold
         it should only fire on mouseup, and if the mouse hasnt moved more than X pixels
+
+    + remove nonexistant language options
+    
+    + dont show the postcard until map
+
+
+    + arabic text still messed up, needs to start from the right
+    + arabic should be bigger by default
+
+    + icon in top right (or left) corner to go back to landing page
+    + add note for mobile users to use a computer "to have the full experience"
 */
 
 
@@ -31,6 +40,7 @@ const divAuthor = document.getElementById("overlay-author");
 const divDescription = document.getElementById("overlay-description");
 const divContent = document.getElementById("overlay-content");
 const divRelated = document.getElementById("overlay-related");
+const divBuffer = document.getElementById("overlay-buffer");
 
 // const overlayCloser = document.getElementById("overlay-close");
 const overlayClosers = document.getElementsByClassName('overlay-close');
@@ -75,15 +85,63 @@ langEnglish.addEventListener('click', function () {
 
 
 
+
+// landing page text
+const landingArabic = document.getElementById("landing-language-arabic");
+const landingGerman = document.getElementById("landing-language-german");
+const landingEnglish = document.getElementById("landing-language-english");
+
+landingArabic.addEventListener('click', function () {
+    activeLanguage = "arabic";
+
+    landingGerman.classList.remove("active-landing");
+    landingEnglish.classList.remove("active-landing");
+    this.classList.add("active-landing");
+
+    fadeIn(document.getElementById("landing-arabic-text"));
+    fadeOut(document.getElementById("landing-english-text"));
+    fadeOut(document.getElementById("landing-german-text"));
+
+
+}, false);
+landingGerman.addEventListener('click', function () {
+    activeLanguage = "german";
+
+    landingArabic.classList.remove("active-landing");
+    landingEnglish.classList.remove("active-landing");
+    this.classList.add("active-landing");
+
+    fadeIn(document.getElementById("landing-german-text"));
+    fadeOut(document.getElementById("landing-english-text"));
+    fadeOut(document.getElementById("landing-arabic-text"));
+
+}, false);
+landingEnglish.addEventListener('click', function () {
+    activeLanguage = "english";
+
+    landingArabic.classList.remove("active-landing");
+    landingGerman.classList.remove("active-landing");
+    this.classList.add("active-landing");
+
+    fadeIn(document.getElementById("landing-english-text"));
+    fadeOut(document.getElementById("landing-arabic-text"));
+    fadeOut(document.getElementById("landing-german-text"));
+
+}, false);
+
+
+
+
+
 // ----------------------- FLAGS, OPTIONS
 // THREE.ColorManagement.legacyMode = false;
 const localTesting = false;
-const DEBUG = true;
+const DEBUG = false;
 let activeLanguage = "german";
 const glyphScale = 1.8;
 const activeGlyphScale = 2;
 const gInactiveColor = new THREE.Color(0xdd3333);
-const gActiveColor = new THREE.Color(0xff0000);
+const gActiveColor = new THREE.Color(0xff4848);
 const emissIntensity = 1;// was 10
 const mapScale = 10;
 const postcardScale = 1;
@@ -281,7 +339,7 @@ function dragStopped(e) {
     debugg("drag stopped");
     moved = false;
 
-    
+
 }
 
 window.addEventListener('mousedown', (e) => {
@@ -381,7 +439,7 @@ function overlayClose() {
 }
 
 
-const distance = (mouseX, mouseY, x2, y2) => Math.hypot(x2 - mouseX, y2 - mouseY); 
+const distance = (mouseX, mouseY, x2, y2) => Math.hypot(x2 - mouseX, y2 - mouseY);
 
 
 
@@ -546,11 +604,11 @@ loader.load(assetsDir + "postcard.glb", function (gltf) {
 // ----------------------- DATA
 
 
-
+let glyphs = [];
 const glyphDataX = [];
 // retrieve the glossary posts data
 const fetchGlyphsURL = "https://al-khatib-glossar.com/wp-json/wp/v2/posts?categories=2&per_page=100&_embed&" + (new Date()).getTime();
-const fetchPostcardURL = "https://al-khatib-glossar.com/wp-json/wp/v2/pages/462";
+// const fetchPostcardURL = "https://al-khatib-glossar.com/wp-json/wp/v2/pages/462";
 
 // _embed gives the additional featured image data, acf_format=standard gives full json data for acf
 
@@ -564,22 +622,65 @@ function debugg(d) {
 
 const fetchData = async () => {
     try {
-        const responsesJSON = await Promise.all([
-            fetch(fetchGlyphsURL),
-            fetch(fetchPostcardURL)
-        ]);
-        const [fetchedGlyphs, fetchedPostcard] = await Promise.all(responsesJSON.map(r => r.json()));
 
-        console.log(fetchedGlyphs, 'fetchedGlyphs');
+        const response = await fetch(fetchGlyphsURL);
+        const jsonData = await response.json();
 
-        fetchedGlyphs.forEach(obj => {
+        console.log(jsonData);
 
-            glyphDataX.push(newGlyph(obj));
+        // const responsesJSON = await Promise.all([
+        //     fetch(fetchGlyphsURL),
+        //     // fetch(fetchPostcardURL)
+        // ]);
+        // const [fetchedGlyphs] = await Promise.all(responsesJSON.map(r => r.json()));
+
+        // console.log(fetchedGlyphs, 'fetchedGlyphs');
+
+        jsonData.forEach(obj => {
+
+            if (obj.id == 550) {
+
+                const fetchedPostcard = obj;
+
+                console.log("caught post 550");
+                console.log(fetchedPostcard.acf.english);
+
+                // add postcard
+                // console.log(fetchedPostcard, 'fetchedPostcard');
+                // console.log(fetchedPostcard.link, fetchedPostcard.title.rendered, fetchedPostcard.content.rendered);
+
+                postcard.htmlData = [];
+
+                if (fetchedPostcard.link)
+                    postcard.htmlData.URL = fetchedPostcard.link;
+
+                if (fetchedPostcard.title.rendered)
+                    postcard.htmlData.title = fetchedPostcard.title.rendered;
+
+                if (obj.acf.english)
+                    postcard.htmlData.post.english = obj.acf.english;
+
+                if (fetchedPostcard.acf.german)
+                    postcard.htmlData.post.german = fetchedPostcard.acf.german;
+
+                if (fetchedPostcard.acf.arabic)
+                    postcard.htmlData.post.arabic = fetchedPostcard.acf.arabic;
+
+                debugg("adding postcard:");
+                debugg(postcard.htmlData);
+
+
+            } else {
+                console.log("adding glyph id " + obj.id);
+                glyphDataX.push(newGlyph(obj));
+            }
+
+
 
         });
 
 
-        let glyphs = [];
+
         if (localTesting) {
             for (let i = 0; i < glyphData.length; i++) {
 
@@ -603,28 +704,7 @@ const fetchData = async () => {
         }
 
 
-        console.log(fetchedPostcard, 'fetchedPostcard');
-        console.log(fetchedPostcard.link, fetchedPostcard.title.rendered, fetchedPostcard.content.rendered);
 
-        postcard.htmlData = [];
-
-        if (fetchedPostcard.link)
-            postcard.htmlData.URL = fetchedPostcard.link;
-
-        if (fetchedPostcard.title.rendered)
-            postcard.htmlData.title = fetchedPostcard.title.rendered;
-
-        if (fetchedPostcard.content.rendered)
-            postcard.htmlData.post = fetchedPostcard.content.rendered;
-
-
-
-        // postcard.htmlData.description = "data.description";
-        // postcard.htmlData.author = data.author;
-        // postcard.htmlData.related = data.related;
-
-        debugg("adding postcard:");
-        debugg(postcard.htmlData);
 
 
     } catch (err) {
@@ -713,6 +793,7 @@ class Glyph extends THREE.Mesh {
 
                 glyph.material = new THREE.MeshStandardMaterial({
                     map: texture,
+                    color: 0xffaaaa,
                     alphaMap: texture,
                     alphaTest: .15,
                     transparent: true,
@@ -871,7 +952,7 @@ function render() {
 
     if (DEBUG) stats.begin();
 
-    console.log(moved);
+    // console.log(moved);
 
 
     if (!overlay) {
@@ -940,6 +1021,7 @@ function getDataFromID(id) {
         // console.log(id, glyphDataX[i].id);
         if (id == glyphDataX[i].id) {
             // setInfo(glyphDataX[i]);
+            activeGlyph = glyphs[i];
             return glyphDataX[i];
         }
     }
@@ -953,8 +1035,15 @@ function setInfoFromRel(id) {
     setInfo(getDataFromID(id));
 }
 
+
+
 function setInfo(data) {
+
+    console.log(activeGlyph);
+
     if (data != null) {
+
+        divBuffer.scroll({ top: 0, behavior: 'smooth' });
 
         if (data.title)
             divTitle.innerHTML = data.title;
@@ -990,9 +1079,46 @@ function setInfo(data) {
 
                 a.addEventListener('click', function () {
                     setInfoFromRel(relID);
+
+                    // activeGlyph = this;
                 }, false);
 
             }
+        }
+
+
+        // get rid of options that don't exist
+        if (data.post.english.length < 2) {
+
+            langEnglish.style.display = "none";
+
+            if (activeLanguage == "english")
+                activeLanguage = "german";
+
+        } else {
+            langEnglish.style.display = "unset";
+        }
+
+        if (data.post.german.length < 2) {
+
+            langGerman.style.display = "none";
+
+            if (activeLanguage == "german")
+                activeLanguage = "arabic";
+
+        } else {
+            langGerman.style.display = "unset";
+        }
+
+        if (data.post.arabic.length < 2) {
+
+            langArabic.style.display = "none";
+
+            if (activeLanguage == "arabic")
+                activeLanguage = "english";
+
+        } else {
+            langArabic.style.display = "unset";
         }
 
 
@@ -1000,22 +1126,24 @@ function setInfo(data) {
         langEnglish.classList.remove("active");
         langArabic.classList.remove("active");
 
-        switch (activeLanguage) {
-            case ("english"):
-                divContent.innerHTML = data.post.english;
-                // divDescription.innerHTML = data.description.english;
-                langEnglish.classList.add("active");
-                break;
-            case ("german"):
-                divContent.innerHTML = data.post.german;
-                // divDescription.innerHTML = data.description.german;
-                langGerman.classList.add("active");
-                break;
-            case ("arabic"):
-                divContent.innerHTML = data.post.arabic;
-                // divDescription.innerHTML = data.description.arabic;
-                langArabic.classList.add("active");
-                break;
+        if (activeLanguage == "english") {
+            divContent.innerHTML = data.post.english;
+            // divDescription.innerHTML = data.description.english;
+            langEnglish.classList.add("active");
+        }
+
+        if (activeLanguage == "german") {
+            divContent.innerHTML = data.post.german;
+            // divDescription.innerHTML = data.description.german;
+            langGerman.classList.add("active");
+        }
+        if (activeLanguage == "arabic") {
+            divContent.innerHTML = data.post.arabic;
+            divContent.classList.add("arabic");
+            // divDescription.innerHTML = data.description.arabic;
+            langArabic.classList.add("active");
+        } else {
+            divContent.classList.remove("arabic");
         }
 
     }
