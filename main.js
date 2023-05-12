@@ -650,6 +650,8 @@ const fetchData = async () => {
                 // console.log(fetchedPostcard.link, fetchedPostcard.title.rendered, fetchedPostcard.content.rendered);
 
                 postcard.htmlData = [];
+                // postcard.post = [];
+                postcard.htmlData.post.english = fetchedPostcard.acf.english;
 
                 if (fetchedPostcard.link)
                     postcard.htmlData.URL = fetchedPostcard.link;
