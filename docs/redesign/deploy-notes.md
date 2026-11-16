@@ -91,3 +91,8 @@ the Local database to production (see §1).
 - Server-side backups made on 2026-11-16 (outside `public_html`): `~/theme-backups/2026-11-16-before-redesign/`
   (old 2023 theme), `~/db-backups/` (DB dump before plugin updates), `~/plugin-backups/` (pre-update copies of
   active plugins, plus ~20 unused inactive plugins removed from the site), `~/log-archive/`.
+- The root `.htaccess` starts with `Options -Indexes` (directory listings were on, e.g. `/wp-content/uploads/`).
+  The rest of the file is the WordPress block plus inert LiteSpeed Cache markers.
+- `~/site-archive/2026-11-16/` holds what was removed from `public_html` that day: the host's `Default.html`
+  "under construction" page, an old three.js tutorial demo at `/testing/`, the pre-change `.htaccess`, and
+  empty leftovers of removed plugins (SiteGround key file, SpeedyCache, Backuply, All-in-One WP Migration).
