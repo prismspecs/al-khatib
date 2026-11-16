@@ -3,147 +3,20 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Al Khatib Glossar</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    
+    <title>Al-Khatib-Glossar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Al-Khatib-Glossar: Ein mehrsprachiges Projekt des Kollektivs Wiese zum Al-Khatib-Verfahren." />
 
-    <!-- Remove this when import maps will be widely supported -->
-    <script async src="https://unpkg.com/es-module-shims@1.6.2/dist/es-module-shims.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css">
-
-
-    <script type="importmap">
-            {
-                "imports": {
-                    "three": "./build/three.module.js",
-                    "three/addons/": "./jsm/"
-                }
-            }
-        </script>
+    <!-- Runtime config before app scripts -->
+    <script src="config.js"></script>
 </head>
 
 <body>
+    <!-- Grain overlay -->
+    <div id="grain-overlay"></div>
+    <div id="ui-root"></div>
 
     <script type="module" src="main.js"></script>
-
-
-    <!-- LANDING -->
-    <div id="landing" class="vertical-center">
-
-        <div class="inner-landing white-fade-bg vertical-center">
-
-            <div class="col50 horizontal-center ">
-
-                <!-- <span class="site-title">Al-Khatib Glossar</span> -->
-
-                <!-- <p style="margin:30px">another secondary title</p> -->
-
-                <a onclick="fadeOut(document.getElementById('landing'))" href="javascript:void(0);">Open the Map</a>
-            </div>
-
-            <div class="col50">
-                <p class="padded-double">"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
-                    doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi
-                    architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
-                    aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi
-                    nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci
-                    velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat
-                    voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit
-                    laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in
-                    ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo
-                    voluptas nulla pariatur?"</p>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- INFO OVERLAYS -->
-    <div id="overlay-outer" style="display:none;opacity:0;">
-        <div id="overlay-inner">
-
-            <div id="overlay-close-icon" class="overlay-close">
-                X
-            </div>
-
-            <div class="overlay-languages">
-                <a href="javascript:void(0)" id="overlay-language-arabic">عربي</a>
-                <a href="javascript:void(0)" id="overlay-language-german">Deutsch</a>
-                <a href="javascript:void(0)" id="overlay-language-english">English</a>
-            </div>
-
-            <div id="overlay-title">
-
-            </div>
-
-            <div id="overlay-author">
-
-            </div>
-
-            <div id="overlay-content">
-                <p>"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
-                    doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi
-                    architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
-                    aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi
-                    nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci
-                    velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat
-                    voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit
-                    laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in
-                    ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo
-                    voluptas nulla pariatur?"</p>
-   
-
-            </div>
-
-            <div id="overlay-related">
-
-            </div>
-
-            <div>
-                <a href="javascript:void(0)" class="overlay-close">Back to map</a>
-
-            </div>
-
-        </div>
-    </div>
-
-
-    <script>
-        function showMap(hideMe) {
-
-            var s = document.getElementById(hideMe).style;
-            s.opacity = 1;
-            (function fade() { (s.opacity -= .1) < 0 ? s.display = "none" : setTimeout(fade, 40) })();
-
-        }
-
-        function fadeOut(element) {
-            var op = 1;  // initial opacity
-            var timer = setInterval(function () {
-                if (op <= 0.1) {
-                    clearInterval(timer);
-                    element.style.display = 'none';
-                }
-                element.style.opacity = op;
-                element.style.filter = 'alpha(opacity=' + op * 100 + ")";
-                op -= op * 0.1;
-            }, 20);
-        }
-
-        function fadeIn(element) {
-            var op = 0.1;  // initial opacity
-            element.style.display = 'block';
-            var timer = setInterval(function () {
-                if (op >= 1) {
-                    clearInterval(timer);
-                }
-                element.style.opacity = op;
-                element.style.filter = 'alpha(opacity=' + op * 100 + ")";
-                op += op * 0.1;
-            }, 20);
-        }
-
-
-    </script>
 </body>
 
 </html>

@@ -1,0 +1,1200 @@
+/* ==========================================================================
+   Entry Panel Component (PLAN-3-entry-content.md §4 C1, C2, C3, C7)
+   ========================================================================== */
+
+.akg-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  inset-inline-end: 0;
+  width: min(720px, 46vw);
+  height: 100vh;
+  background: rgba(14, 16, 21, 0.92);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-inline-start: 1px solid var(--ink-3);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  overflow: hidden;
+  pointer-events: auto;
+  transform: translateX(32px);
+  opacity: 0;
+  transition: transform var(--dur-panel) var(--ease),
+              opacity var(--dur-panel) var(--ease),
+              width var(--dur-panel) var(--ease);
+}
+
+[dir="rtl"] .akg-panel {
+  transform: translateX(-32px);
+}
+
+.akg-panel.is-open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+[dir="rtl"] .akg-panel.is-open {
+  transform: translateX(0);
+}
+
+/* Selection Color (Plan 3 §4 C7) */
+.akg-panel ::selection {
+  background: var(--prussian);
+  color: var(--paper);
+}
+
+/* Focus Ring (Plan 3 §4 C7: 2px --paper, offset 2px) */
+.akg-panel button:focus-visible,
+.akg-panel a:focus-visible,
+.akg-panel [role="slider"]:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 2px;
+}
+
+/* Reading Mode [F] Geometry & Morphing (Plan 3 Part B §3) */
+.akg-panel.is-expanded {
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  border: none;
+  background: rgba(11, 12, 16, 0.96);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  transform: none !important;
+  z-index: 70;
+  transition: width 500ms var(--ease),
+              background 500ms var(--ease);
+}
+
+.akg-panel.is-morphing .reading-grid {
+  opacity: 0.15;
+  transition: opacity 180ms ease;
+}
+
+.akg-panel .reading-grid {
+  transition: opacity 240ms ease;
+}
+
+/* Panel Header & Meta Row (Plan 3 §4 C1: sticky 56px glass) */
+.panel-header {
+  position: sticky;
+  top: 0;
+  height: 56px;
+  z-index: 55;
+  background: rgba(14, 16, 21, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--ink-3);
+  flex-shrink: 0;
+}
+
+.panel-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.panel-wordmark {
+  display: none;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--paper);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.panel-wordmark:hover {
+  color: var(--trace);
+}
+
+.akg-panel.is-expanded .panel-wordmark {
+  display: inline-flex;
+}
+
+.entry-meta-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.entry-type {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--trace);
+  letter-spacing: 0.06em;
+}
+
+[dir="rtl"] .entry-type {
+  font-family: var(--font-arabic-display);
+  text-transform: none;
+}
+
+.entry-index-counter {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--paper-mute);
+  letter-spacing: 0.04em;
+}
+
+.entry-meta-langs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.entry-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Reading Progress Hairline (Plan 3 §4 C1, C7: 1px hairline under header) */
+.reading-progress {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  background: transparent;
+  z-index: 56;
+  flex-shrink: 0;
+}
+
+.reading-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--trace);
+  transition: width 60ms linear;
+}
+
+/* Availability Note (Plan 3 §4 C6: single mono line under header, no dashed box) */
+.entry-availability-note {
+  margin: 14px 40px 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--paper-dim);
+  letter-spacing: 0.02em;
+}
+
+[dir="rtl"] .entry-availability-note {
+  font-family: var(--font-arabic-read);
+}
+
+/* The Panel Scroller (Plan 3 §2 A5, §4 C1: the only scroller) */
+.panel-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 48px 40px 64px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-3) transparent;
+}
+
+.panel-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.panel-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panel-scroll::-webkit-scrollbar-thumb {
+  background: var(--ink-3);
+  border-radius: 3px;
+}
+
+.panel-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--paper-mute);
+}
+
+/* First Open Rise Animation (Plan 3 §4 C7) */
+@keyframes entryElementRise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.akg-panel.is-open .entry-head {
+  animation: entryElementRise 240ms cubic-bezier(0.2, 0.7, 0.1, 1) both;
+}
+
+.akg-panel.is-open .entry-body,
+.akg-panel.is-open .entry-media,
+.akg-panel.is-open .entry-notes {
+  animation: entryElementRise 240ms cubic-bezier(0.2, 0.7, 0.1, 1) 60ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .akg-panel.is-open .entry-head,
+  .akg-panel.is-open .entry-body,
+  .akg-panel.is-open .entry-media,
+  .akg-panel.is-open .entry-notes {
+    animation: none;
+  }
+}
+
+/* Entry Head (Plan 3 §4 C1, C3) */
+.entry-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+/* Emblem: up to 220px wide, no box, no glow (Plan 3 §4 C3) */
+.entry-emblem {
+  margin-bottom: 24px;
+  line-height: 0;
+}
+
+.entry-drawing {
+  max-width: 220px;
+  max-height: 220px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border: none;
+  background: none;
+  box-shadow: none;
+  filter: none;
+}
+
+/* Entry Title (Plan 3 §4 C2: clamp(2.25rem, 3.4vw, 3.25rem), lh 1.02, Favorit) */
+.entry-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 3.4vw, 3.25rem);
+  font-weight: 500;
+  line-height: 1.02;
+  color: var(--paper);
+  letter-spacing: -0.01em;
+  margin: 0 0 20px 0;
+  text-wrap: balance;
+  text-transform: lowercase;
+}
+
+[dir="rtl"] .entry-title {
+  font-family: var(--font-arabic-display);
+  font-size: clamp(2.4rem, 3.6vw, 3.5rem);
+  line-height: 1.15;
+  text-transform: none;
+}
+
+/* Contributors / Credits */
+.entry-credits {
+  margin: 0 0 24px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.entry-credit-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.credit-role {
+  color: var(--trace);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+[dir="rtl"] .credit-role {
+  font-family: var(--font-arabic-display);
+  text-transform: none;
+}
+
+.credit-names {
+  color: var(--paper-dim);
+}
+
+/* Media Hero Container */
+.entry-media {
+  margin-bottom: 24px;
+}
+
+/* Custom Audio Player (Plan 3 §4 C5) */
+.akg-audio-player {
+  margin: 16px 0 24px;
+  padding: 16px 20px;
+  border: 1px solid var(--ink-3);
+  border-radius: var(--radius);
+  background: rgba(11, 12, 16, 0.75);
+  transition: all var(--dur-fast) var(--ease);
+}
+
+.akg-audio-player.is-sticky-playing {
+  position: sticky;
+  top: 0;
+  z-index: 54;
+  background: rgba(14, 16, 21, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--ink-3);
+  margin-top: -48px;
+  padding-top: 24px;
+  margin-inline: -40px;
+  padding-inline: 40px;
+  border-radius: 0;
+}
+
+.akg-player-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.akg-player-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--trace);
+  color: var(--paper);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease),
+              background-color var(--dur-fast) var(--ease);
+}
+
+.akg-player-toggle:hover {
+  transform: scale(1.05);
+}
+
+.akg-player-toggle:active {
+  transform: scale(0.96);
+}
+
+.akg-audio-player.is-audio-only .akg-player-toggle {
+  width: 56px;
+  height: 56px;
+  font-size: 18px;
+}
+
+.akg-player-time {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--paper-dim);
+  letter-spacing: 0.04em;
+}
+
+.time-divider {
+  margin-inline: 4px;
+  color: var(--paper-mute);
+}
+
+.akg-player-track {
+  position: relative;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.akg-audio-player.is-audio-only .akg-player-track {
+  height: 48px;
+}
+
+.waveform-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.track-fallback-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--ink-3);
+}
+
+.track-fallback-line .track-progress {
+  position: absolute;
+  left: 0;
+  height: 100%;
+  background: var(--trace);
+  width: 0%;
+}
+
+/* Audio-only layout (Plan 3 §4 C5) */
+.akg-panel.is-kind-audio-only .entry-head {
+  align-items: center;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.akg-panel.is-kind-audio-only .entry-emblem {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.akg-panel.is-kind-audio-only .entry-drawing {
+  max-width: 60%;
+  width: auto;
+  margin-inline: auto;
+}
+
+.akg-panel.is-kind-audio-only .entry-title {
+  text-align: center;
+  margin-inline: auto;
+}
+
+.akg-panel.is-kind-audio-only .entry-credits {
+  align-items: center;
+  text-align: center;
+  margin-inline: auto;
+}
+
+/* Reading Body Typography (Plan 3 §4 C2: 19px / 1.6, Newsreader 400, --paper at 92%) */
+.entry-body {
+  margin-bottom: 40px;
+}
+
+.entry-body-content {
+  font-family: var(--font-read);
+  font-size: 19px;
+  line-height: 1.6;
+  color: rgba(240, 237, 230, 0.92);
+  max-width: 34rem;
+  hyphens: auto;
+  text-wrap: pretty;
+  font-kerning: normal;
+  font-feature-settings: "onum" 1;
+  transition: opacity 200ms var(--ease);
+}
+
+.entry-body-content.is-switching {
+  opacity: 0;
+}
+
+.entry-body-content p {
+  margin-block: 0 1.05em;
+  text-indent: 0;
+}
+
+.entry-body-content.arabic,
+[dir="rtl"] .entry-body-content {
+  font-family: var(--font-arabic-read);
+  font-size: 22px;
+  line-height: 1.95;
+  direction: rtl;
+  font-style: normal;
+  letter-spacing: normal;
+}
+
+.entry-body-content a {
+  color: var(--paper);
+  text-decoration: underline;
+  text-decoration-color: var(--trace);
+  text-underline-offset: 3px;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.entry-body-content a:hover {
+  color: var(--trace);
+}
+
+.entry-body-content img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--ink-3);
+  border-radius: var(--radius);
+  margin: 24px 0;
+  display: block;
+}
+
+.entry-body-content video {
+  max-width: 100%;
+  width: 100%;
+  border: 1px solid var(--ink-3);
+  border-radius: var(--radius);
+  margin: 24px 0;
+  background: #000;
+  display: block;
+}
+
+.entry-body-content blockquote {
+  border-inline-start: 2px solid var(--trace);
+  padding-inline-start: 18px;
+  margin: 24px 0;
+  color: var(--paper);
+  font-style: italic;
+}
+
+/* Spacers (Plan 3 §4 C4.5) */
+.gap {
+  display: block;
+}
+.gap[data-size="1"] { height: 1.05em; }
+.gap[data-size="2"] { height: 2.1em; }
+.gap[data-size="3"] { height: 3.15em; }
+
+/* Indents (Plan 3 §4 C4.2) */
+[data-indent="1"] { margin-inline-start: 1.5rem; }
+[data-indent="2"] { margin-inline-start: 3rem; }
+[data-indent="3"] { margin-inline-start: 4.5rem; }
+[data-indent="4"] { margin-inline-start: 6rem; }
+[data-indent="5"] { margin-inline-start: 7.5rem; }
+[data-indent="6"] { margin-inline-start: min(9rem, 30%); }
+[data-indent="7"] { margin-inline-start: min(10.5rem, 35%); }
+[data-indent="8"] { margin-inline-start: min(12rem, 40%); }
+[data-indent="9"] { margin-inline-start: min(13.5rem, 45%); }
+[data-indent="10"] { margin-inline-start: min(15rem, 50%); }
+[data-indent="11"] { margin-inline-start: min(16.5rem, 55%); }
+[data-indent="12"] { margin-inline-start: min(18rem, 60%); }
+
+/* Underline marks (Plan 3 §4 C4.1) */
+u.mark {
+  text-decoration: underline;
+  text-decoration-color: var(--trace);
+  text-underline-offset: 3px;
+}
+
+/* Sub-headings (Plan 3 §4 C4.8: Favorit 20px, margin-block: 2.2em 0.6em) */
+h3.subhead {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--paper);
+  margin-block: 2.2em 0.6em;
+}
+
+[dir="rtl"] h3.subhead {
+  font-family: var(--font-arabic-display);
+  font-size: 22px;
+}
+
+/* Speaker turns (Plan 3 §4 C4.7: speaker in Plex Mono 11px uppercase --trace) */
+.turn {
+  margin-block: 0 1.25em;
+}
+
+.turn .speaker {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--trace);
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+[dir="rtl"] .turn .speaker {
+  font-family: var(--font-arabic-display);
+  text-transform: none;
+}
+
+/* Verse (Plan 3 §4 C2, C4.6: body size, lh 1.5, upright, hanging indent 1.5rem) */
+.entry-body-content .poem,
+.entry-body-content .verse {
+  font-size: inherit;
+  line-height: 1.5;
+  font-style: normal;
+  margin-block: 0 1.05em;
+}
+
+.entry-body-content .stanza {
+  margin-block: 0 1.1em;
+}
+
+.entry-body-content .line {
+  display: block;
+  line-height: 1.5;
+  padding-inline-start: 1.5rem;
+  text-indent: -1.5rem;
+}
+
+/* Figures (Plan 3 §4 C4.10) */
+figure.fig {
+  margin: 24px 0;
+  width: 100%;
+}
+
+figure.fig img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  cursor: zoom-in;
+  display: block;
+}
+
+figure.fig.fig-gif {
+  display: flex;
+  justify-content: center;
+}
+
+figure.fig.fig-gif img {
+  width: auto;
+  max-width: 100%;
+  cursor: default;
+}
+
+/* Lists (Plan 3 §4 C4.11) */
+.entry-list {
+  margin-block: 0 1.05em;
+  padding-inline-start: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+}
+
+.entry-list li {
+  line-height: 1.6;
+}
+
+/* External Link Arrow (Plan 3 §4 C4.12) */
+.ext-arrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--trace);
+  text-decoration: none;
+  display: inline-block;
+  margin-inline-start: 2px;
+}
+
+/* Notes / Sources Section (Plan 3 §4 C1, C2, C4.9: 15px / 1.5, --paper-dim) */
+.entry-notes {
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid var(--ink-3);
+  font-family: var(--font-read);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--paper-dim);
+}
+
+.entry-notes-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--paper-mute);
+  letter-spacing: 0.06em;
+  margin-bottom: 16px;
+}
+
+[dir="rtl"] .entry-notes-title {
+  font-family: var(--font-arabic-display);
+  text-transform: none;
+}
+
+.notes-list {
+  padding-inline-start: 18px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.note-item {
+  font-family: var(--font-read);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--paper-dim);
+}
+
+.note-ref a {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--trace);
+  text-decoration: none;
+  padding-inline: 2px;
+}
+
+.note-back {
+  color: var(--trace);
+  text-decoration: none;
+  margin-inline-start: 6px;
+}
+
+.section-divider {
+  width: 48px;
+  height: 1px;
+  border: none;
+  background: var(--ink-3);
+  margin: 2.5em auto;
+}
+
+[dir="rtl"] .entry-notes {
+  font-family: var(--font-arabic-read);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+/* Related Entries List (Plan 3 §4 C3: 56px drawings beside title, as a list) */
+.entry-related {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--ink-3);
+}
+
+.entry-related-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--paper-mute);
+  letter-spacing: 0.06em;
+  margin-bottom: 20px;
+}
+
+[dir="rtl"] .entry-related-title {
+  font-family: var(--font-arabic-display);
+  text-transform: none;
+}
+
+.entry-related-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.entry-related-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--ink-3);
+  border-radius: var(--radius);
+  background: rgba(20, 22, 29, 0.4);
+  text-decoration: none;
+  transition: border-color var(--dur-fast) var(--ease),
+              background-color var(--dur-fast) var(--ease);
+}
+
+.entry-related-item:hover {
+  border-color: var(--trace);
+  background: rgba(226, 96, 65, 0.08);
+}
+
+.related-drawing {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.related-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.related-item-type {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--trace);
+}
+
+[dir="rtl"] .related-item-type {
+  font-family: var(--font-arabic-display);
+  text-transform: none;
+}
+
+.related-item-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 1.2;
+  color: var(--paper);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+[dir="rtl"] .related-item-title {
+  font-family: var(--font-arabic-display);
+  font-size: 19px;
+}
+
+/* Footer Prev / Next Navigation (Plan 3 §4 C3: drawing + title, each half width) */
+.entry-footer-nav {
+  display: flex;
+  gap: 16px;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--ink-3);
+}
+
+.entry-footer-nav .nav-link {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border: 1px solid var(--ink-3);
+  border-radius: var(--radius);
+  background: rgba(20, 22, 29, 0.4);
+  text-decoration: none;
+  transition: border-color var(--dur-fast) var(--ease),
+              background-color var(--dur-fast) var(--ease);
+  min-width: 0;
+}
+
+.entry-footer-nav .nav-link:hover {
+  border-color: var(--paper-dim);
+  background: rgba(240, 237, 230, 0.04);
+}
+
+.nav-drawing {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.nav-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.nav-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--paper-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+[dir="rtl"] .nav-meta {
+  font-family: var(--font-arabic-display);
+  text-transform: none;
+}
+
+.nav-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  line-height: 1.25;
+  color: var(--paper);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+[dir="rtl"] .nav-title {
+  font-family: var(--font-arabic-display);
+  font-size: 17px;
+}
+
+.sheet-drag-handle {
+  display: none;
+}
+
+/* Mobile responsive bottom sheet */
+@media (max-width: 720px) {
+  .sheet-drag-handle {
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: var(--paper-mute);
+    opacity: 0.5;
+    border-radius: 2px;
+    margin: 10px auto 4px auto;
+    cursor: grab;
+  }
+
+  .akg-panel {
+    top: auto;
+    bottom: 0;
+    inset-inline: 0;
+    width: 100vw;
+    height: 55vh;
+    border-inline-start: none;
+    border-top: 1px solid var(--ink-3);
+    border-radius: 14px 14px 0 0;
+    transform: translateY(0);
+  }
+
+  .panel-header {
+    padding: 0 20px;
+  }
+
+  .panel-scroll {
+    padding: 24px 20px 48px;
+  }
+
+  .akg-panel.is-hidden {
+    transform: translateY(100%);
+  }
+
+  .entry-expand-btn {
+    display: none !important;
+  }
+
+  .akg-panel.is-expanded {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+}
+
+/* ==========================================================================
+   Reading Mode Grid & Rails (Plan 3 Part B §3, §4 C1, C2, C3, C7)
+   ========================================================================== */
+
+/* Side Panel Mode Default: hide rails */
+.akg-panel:not(.is-expanded) .rail {
+  display: none !important;
+}
+
+/* Reading Mode (>= 1100px) */
+@media (min-width: 1100px) {
+  .akg-panel.is-expanded .entry-meta-left {
+    display: none !important;
+  }
+
+  .akg-panel.is-expanded .panel-scroll {
+    padding: 48px 48px 80px;
+  }
+
+  .akg-panel.is-expanded .reading-grid {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(0, 42rem) minmax(220px, 1fr);
+    column-gap: 48px;
+    width: 100%;
+    max-width: 90rem;
+    margin-inline: auto;
+    align-items: start;
+  }
+
+  .akg-panel.is-expanded .rail-start {
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 96px;
+    gap: 20px;
+    align-self: start;
+  }
+
+  .akg-panel.is-expanded .rail-drawing-wrap {
+    line-height: 0;
+  }
+
+  .akg-panel.is-expanded .rail-drawing {
+    max-width: 260px;
+    max-height: 260px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    border: none;
+    background: none;
+  }
+
+  .akg-panel.is-expanded .rail-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .akg-panel.is-expanded .rail-type {
+    color: var(--trace);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+
+  [dir="rtl"] .akg-panel.is-expanded .rail-type {
+    font-family: var(--font-arabic-display);
+    text-transform: none;
+  }
+
+  .akg-panel.is-expanded .rail-counter {
+    color: var(--paper-mute);
+    letter-spacing: 0.04em;
+  }
+
+  .akg-panel.is-expanded .rail-langs {
+    display: flex;
+    gap: 4px;
+  }
+
+  .akg-panel.is-expanded .rail-credits {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .akg-panel.is-expanded .reading-center {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 42rem;
+    min-width: 0;
+    margin-inline: auto;
+  }
+
+  .akg-panel.is-expanded .rail-end {
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 96px;
+    gap: 32px;
+    align-self: start;
+  }
+
+  .akg-panel.is-expanded .rail-notes {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--paper-dim);
+  }
+
+  .akg-panel.is-expanded .rail-notes .entry-notes-title {
+    margin-top: 0;
+  }
+
+  /* In reading mode on >= 1100px, elements in reading-center that moved to rails are hidden */
+  .akg-panel.is-expanded .reading-center .entry-emblem,
+  .akg-panel.is-expanded .reading-center .entry-credits,
+  .akg-panel.is-expanded .reading-center .entry-notes,
+  .akg-panel.is-expanded .reading-center .entry-related {
+    display: none !important;
+  }
+}
+
+/* Reading Mode (< 1100px) */
+@media (max-width: 1099px) {
+  .akg-panel.is-expanded .panel-scroll {
+    padding: 40px 24px 64px;
+  }
+
+  .akg-panel.is-expanded .reading-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 32px;
+  }
+
+  .akg-panel.is-expanded .rail-start,
+  .akg-panel.is-expanded .rail-end {
+    display: none !important;
+  }
+
+  .akg-panel.is-expanded .reading-center {
+    width: min(42rem, 100vw - 48px);
+    max-width: min(42rem, 100vw - 48px);
+  }
+
+  .akg-panel.is-expanded .reading-center .entry-emblem {
+    display: block !important;
+  }
+
+  .akg-panel.is-expanded .reading-center .entry-credits {
+    display: flex !important;
+  }
+
+  .akg-panel.is-expanded .reading-center .entry-notes {
+    display: block;
+  }
+
+  .akg-panel.is-expanded .reading-center .entry-related {
+    display: block;
+  }
+}
+
+/* Hide chrome in reading mode (Plan 3 §2 A6) */
+body.is-reading-mode #chrome-layer,
+body.is-reading-mode .chrome-bottom-right,
+body.is-reading-mode .akg-nav-cluster,
+body.is-reading-mode #chrome-hint {
+  display: none !important;
+}
+
+/* Typography in reading mode (Plan 3 §4 C2) */
+.akg-panel.is-expanded .entry-title {
+  font-size: clamp(3rem, 5vw, 4.5rem);
+  line-height: 1.02;
+  margin-bottom: 28px;
+}
+
+[dir="rtl"] .akg-panel.is-expanded .entry-title {
+  font-size: clamp(3.2rem, 5.5vw, 5rem);
+  line-height: 1.15;
+}
+
+.akg-panel.is-expanded .entry-body-content {
+  font-size: 21px;
+  line-height: 1.62;
+  max-width: 42rem;
+}
+
+.akg-panel.is-expanded .entry-body-content.arabic {
+  font-size: 24px;
+  line-height: 2.0;
+}
+
+/* Speaker Turns in Reading Mode (Plan 3 §4 C4.7: name hangs in start margin, grid 8rem 1fr) */
+@media (min-width: 720px) {
+  .akg-panel.is-expanded .turn {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    column-gap: 20px;
+    align-items: baseline;
+  }
+
+  .akg-panel.is-expanded .turn .speaker {
+    display: block;
+    margin-bottom: 0;
+    text-align: end;
+  }
+
+  [dir="rtl"] .akg-panel.is-expanded .turn .speaker {
+    text-align: start;
+  }
+}
+
+/* Figures Breakout in Reading Mode (Plan 3 §4 C4.10) */
+.akg-panel.is-expanded .fig {
+  max-width: min(64rem, 92vw);
+  margin-inline: auto;
+}
+
+/* Footnote highlight */
+.note-item.is-highlighted {
+  background: rgba(226, 96, 65, 0.15);
+  transition: background 0.3s ease;
+  border-radius: var(--radius);
+}

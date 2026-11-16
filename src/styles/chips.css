@@ -1,0 +1,302 @@
+/* ==========================================================================
+   Chip Component (PLAN.md §2.3)
+   ========================================================================== */
+
+#chrome-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 65;
+  pointer-events: none !important;
+}
+
+#chrome-layer > * {
+  pointer-events: auto;
+}
+
+.akg-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding-inline: 10px;
+  border: 1px solid var(--ink-3);
+  border-radius: var(--radius);
+  background: rgba(20, 22, 29, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: border-color var(--dur-fast) var(--ease),
+              background-color var(--dur-fast) var(--ease),
+              color var(--dur-fast) var(--ease);
+  line-height: 1;
+}
+
+/* 8px hit-slop margin for touch & click ease */
+.akg-chip::after {
+  content: '';
+  position: absolute;
+  inset: -6px -3px;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+.akg-chip:hover {
+  border-color: var(--paper);
+}
+
+.akg-chip.is-active,
+.akg-chip:active {
+  background: var(--paper);
+  border-color: var(--paper);
+  color: var(--ink);
+}
+
+.akg-chip.is-active .kbd-hint {
+  color: var(--ink-3);
+}
+
+.akg-chip .kbd-hint {
+  color: var(--paper-mute);
+  font-size: 10px;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+/* Chrome Containers */
+.chrome-top-left {
+  position: absolute;
+  top: 24px;
+  inset-inline-start: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.site-wordmark {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  color: var(--paper);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.site-wordmark:hover {
+  color: var(--trace);
+}
+
+.chrome-top-right {
+  position: absolute;
+  top: 24px;
+  inset-inline-end: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: inset-inline-end var(--dur-mid) var(--ease),
+              inset-inline-start var(--dur-mid) var(--ease);
+}
+
+/* Plan 2 §5 D2: Move chips out of way when entry or About panel is open */
+.chrome--panel-open .chrome-top-right {
+  inset-inline-end: auto;
+  inset-inline-start: 220px;
+}
+
+.chrome--panel-open .chrome-top-right .akg-chip-group {
+  display: none !important;
+}
+
+@media (max-width: 720px) {
+  body.is-reading-mode #chrome-layer,
+  body.is-about-open #chrome-layer {
+    display: none !important;
+  }
+
+  .chrome-top-left {
+    top: 14px;
+    inset-inline-start: 14px;
+  }
+
+  .site-wordmark {
+    font-size: 13px;
+  }
+
+  .chrome-top-right {
+    top: 14px;
+    inset-inline-end: 14px;
+    gap: 4px;
+  }
+
+  .akg-chip {
+    padding-inline: 8px;
+    font-size: 11px;
+    height: 26px;
+  }
+
+  .kbd-hint {
+    display: none !important;
+  }
+
+  .chrome--panel-open .chrome-top-right {
+    inset-inline-end: 14px;
+    inset-inline-start: auto;
+    top: 14px;
+  }
+
+  .chrome-bottom-right {
+    inset-inline-end: 14px;
+    bottom: 14px;
+  }
+
+  .akg-nav-cluster {
+    inset-inline-end: 14px;
+    bottom: 50px;
+  }
+}
+
+.chrome-bottom-left {
+  position: absolute;
+  bottom: 24px;
+  inset-inline-start: 24px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--paper-mute);
+  transition: opacity 1s var(--ease);
+}
+
+.chrome-bottom-right {
+  position: absolute;
+  bottom: 24px;
+  inset-inline-end: calc(var(--panel-w, 0px) + 24px);
+  display: flex;
+  align-items: center;
+  transition: inset-inline-end var(--dur-mid, 320ms) var(--ease);
+}
+
+/* Navigation Controls Cluster (Plan 2 §3.3 B3, Plan 3 §2 A6) */
+.akg-nav-cluster {
+  position: absolute;
+  bottom: 64px;
+  inset-inline-end: calc(var(--panel-w, 0px) + 24px);
+  z-index: 64;
+  pointer-events: auto;
+  transition: inset-inline-end var(--dur-mid, 320ms) var(--ease);
+}
+
+.nav-cluster-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.nav-chip-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.nav-compass-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.compass-ring {
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(236, 231, 218, 0.4);
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.compass-needle {
+  position: absolute;
+  width: 2px;
+  height: 9px;
+  top: 1px;
+  background-color: var(--trace);
+  transform-origin: center 9px;
+  transition: transform 60ms linear;
+  border-radius: 1px;
+}
+
+@media (max-width: 720px) {
+  .akg-nav-cluster {
+    bottom: 56px;
+    inset-inline-end: 16px;
+  }
+}
+
+/* Hover Label Chip (PLAN.md §3.4) */
+#glyph-hover-chip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding-inline: 12px;
+  border: 1px solid var(--trace);
+  border-radius: var(--radius);
+  background: rgba(11, 12, 16, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate3d(0, 0, 0) scale(0.96);
+  transition: opacity 180ms var(--ease),
+              border-color 180ms var(--ease);
+  will-change: transform, opacity;
+}
+
+#glyph-hover-chip.is-visible {
+  opacity: 1;
+}
+
+#glyph-hover-chip .chip-title {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--paper);
+}
+
+#glyph-hover-chip .chip-type {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--trace);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+#glyph-hover-chip .chip-langs {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--paper-mute);
+  letter-spacing: 0.06em;
+}
+
+@media (pointer: coarse) {
+  #glyph-hover-chip {
+    display: none !important;
+  }
+}
+

@@ -3,7 +3,19 @@
 import { defineConfig, loadEnv } from 'vite'
 
 export default defineConfig({
-    // plugins: [vue()],
+    base: './',
+    server: {
+        proxy: {
+            '/wp-json': {
+                target: 'http://al-khatib.local',
+                changeOrigin: true,
+            },
+            '/wp-content': {
+                target: 'http://al-khatib.local',
+                changeOrigin: true,
+            },
+        },
+    },
     build: {
         rollupOptions: {
             output: {

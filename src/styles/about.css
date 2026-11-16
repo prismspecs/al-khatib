@@ -1,0 +1,385 @@
+/* ==========================================================================
+   About View Styles (PLAN.md §2.4 E & §6, Plan 3 Design System Alignment)
+   ========================================================================== */
+
+.about-panel {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  inset-inline-end: 0;
+  width: min(720px, 48vw);
+  height: 100vh;
+  background: rgba(14, 16, 21, 0.94);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-inline-start: 1px solid var(--ink-3);
+  display: flex;
+  flex-direction: column;
+  z-index: 70; /* Above persistent chrome layer (65) */
+  box-sizing: border-box;
+  pointer-events: auto;
+  transform: translateX(32px);
+  opacity: 0;
+  transition: transform var(--dur-panel) var(--ease),
+              opacity var(--dur-panel) var(--ease);
+}
+
+[dir="rtl"] .about-panel {
+  transform: translateX(-32px);
+}
+
+.about-panel.is-open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+[dir="rtl"] .about-panel.is-open {
+  transform: translateX(0);
+}
+
+/* 56px Sticky Header matching entry panel */
+.about-panel .panel-header {
+  position: sticky;
+  top: 0;
+  height: 56px;
+  z-index: 55;
+  background: rgba(14, 16, 21, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--ink-3);
+  flex-shrink: 0;
+}
+
+.about-panel .panel-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.about-panel .panel-wordmark {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--paper);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.about-panel .panel-wordmark:hover {
+  color: var(--trace);
+}
+
+.about-meta-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.about-type-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--trace);
+  letter-spacing: 0.06em;
+}
+
+[dir="rtl"] .about-type-badge {
+  font-family: var(--font-arabic-display);
+  letter-spacing: normal;
+}
+
+.about-panel .panel-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 1px Reading Progress Hairline */
+.about-panel .reading-progress {
+  height: 1px;
+  width: 100%;
+  background: var(--ink-3);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.about-panel .reading-progress-fill {
+  position: absolute;
+  top: 0;
+  inset-inline-start: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--trace);
+  transition: width 80ms linear;
+}
+
+/* Dedicated Scroll Container */
+.about-panel .panel-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: 48px 40px 80px;
+  box-sizing: border-box;
+}
+
+.about-panel .panel-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.about-panel .panel-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.about-panel .panel-scroll::-webkit-scrollbar-thumb {
+  background: var(--ink-3);
+  border-radius: 3px;
+}
+
+.about-panel .panel-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-2);
+}
+
+/* Centered Reading Column */
+.about-reading-container {
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+/* Hero Section */
+.about-hero {
+  margin-bottom: 32px;
+}
+
+.about-display-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 3.6vw, 3.2rem);
+  font-weight: 500;
+  color: var(--paper);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px 0;
+}
+
+[dir="rtl"] .about-display-title {
+  font-family: var(--font-arabic-display);
+  letter-spacing: normal;
+}
+
+.about-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--trace);
+  margin: 0;
+}
+
+[dir="rtl"] .about-subtitle {
+  font-family: var(--font-arabic-display);
+  letter-spacing: normal;
+}
+
+/* Workshop Intro / Lead */
+.about-lead {
+  font-family: var(--font-reading);
+  font-size: 1.125rem;
+  line-height: 1.72;
+  color: var(--paper);
+  margin-bottom: 32px;
+  text-wrap: pretty;
+}
+
+[dir="rtl"] .about-lead {
+  font-family: var(--font-arabic-reading);
+  font-size: 1.25rem;
+  line-height: 1.95;
+}
+
+.about-lead p {
+  margin: 0;
+}
+
+/* Section Dividers with Mono Labels */
+.about-section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 36px 0 20px 0;
+}
+
+.about-section-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--trace);
+  white-space: nowrap;
+}
+
+[dir="rtl"] .about-section-label {
+  font-family: var(--font-arabic-display);
+  letter-spacing: normal;
+}
+
+.about-section-line {
+  flex: 1;
+  height: 1px;
+  background: var(--ink-3);
+}
+
+/* Collective Statement Paragraphs */
+.about-statement {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.statement-para {
+  font-family: var(--font-reading);
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--paper-dim);
+  margin: 0;
+  text-wrap: pretty;
+}
+
+[dir="rtl"] .statement-para {
+  font-family: var(--font-arabic-reading);
+  font-size: 1.15rem;
+  line-height: 1.95;
+}
+
+/* Credits Grid */
+.about-credits-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0 0 28px 0;
+  padding: 0;
+}
+
+.about-credit-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--ink-3);
+  border-radius: 4px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.credit-role {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--paper-mute);
+}
+
+[dir="rtl"] .credit-role {
+  font-family: var(--font-arabic-display);
+  letter-spacing: normal;
+}
+
+.credit-people {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--paper);
+  line-height: 1.55;
+}
+
+[dir="rtl"] .credit-people {
+  font-family: var(--font-arabic-display);
+}
+
+/* Funder and Contact Cards */
+.about-funder-card,
+.about-contact-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--ink-3);
+  border-radius: 4px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.funder-text {
+  font-family: var(--font-reading);
+  font-size: 0.95rem;
+  color: var(--paper-dim);
+  margin: 0;
+  line-height: 1.5;
+}
+
+[dir="rtl"] .funder-text {
+  font-family: var(--font-arabic-reading);
+}
+
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.about-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--paper);
+  text-decoration: none;
+  border-bottom: 1px solid var(--ink-3);
+  padding-bottom: 2px;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+
+.about-link:hover {
+  color: var(--trace);
+  border-color: var(--trace);
+}
+
+.about-link-icon {
+  color: var(--trace);
+}
+
+/* Mobile Responsive */
+@media (max-width: 720px) {
+  .about-panel {
+    width: 100vw;
+    border-inline-start: none;
+  }
+
+  body.is-about-open #chrome-layer {
+    display: none !important;
+  }
+
+  .about-panel .panel-header {
+    padding: 0 16px;
+  }
+
+  .about-panel .panel-scroll {
+    padding: 24px 18px 60px;
+  }
+
+  .about-display-title {
+    font-size: 2.1rem;
+  }
+
+  .about-lead {
+    font-size: 1.05rem;
+  }
+}

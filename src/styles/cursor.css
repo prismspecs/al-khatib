@@ -1,0 +1,73 @@
+/* ==========================================================================
+   Custom Inspection Cursor (PLAN.md §2.3)
+   ========================================================================== */
+
+#custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 90;
+  will-change: transform;
+}
+
+#custom-cursor .cursor-dot {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 6px;
+  height: 6px;
+  background-color: var(--paper);
+  border-radius: 50%;
+  transition: transform var(--dur-fast) var(--ease),
+              background-color var(--dur-fast) var(--ease);
+}
+
+#custom-cursor .cursor-ring {
+  position: absolute;
+  top: -14px;
+  left: -14px;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(236, 231, 218, 0.4);
+  border-radius: 50%;
+  transition: transform var(--dur-fast) var(--ease),
+              border-color var(--dur-fast) var(--ease),
+              width var(--dur-fast) var(--ease),
+              height var(--dur-fast) var(--ease);
+}
+
+/* Hovering over a glyph trace */
+#custom-cursor.is-hovering .cursor-ring {
+  border-color: var(--trace);
+  transform: scale(0.7);
+}
+
+#custom-cursor.is-hovering .cursor-dot {
+  background-color: var(--trace);
+}
+
+/* Dragging / panning paper (Plan 2 §3.4 B4) */
+#custom-cursor.is-grabbing .cursor-ring {
+  background-color: rgba(236, 231, 218, 0.35);
+  border-color: var(--paper);
+  transform: scale(0.85);
+}
+
+#custom-cursor.is-grabbing .cursor-dot {
+  transform: scale(1.4);
+}
+
+/* Rotating / tilting map */
+#custom-cursor.is-rotating .cursor-ring {
+  border-style: dashed;
+  border-color: #7090b0;
+  transform: scale(1.15);
+}
+
+/* Hide on touch devices or fine pointer absent */
+@media (hover: none) and (pointer: coarse) {
+  #custom-cursor {
+    display: none !important;
+  }
+}

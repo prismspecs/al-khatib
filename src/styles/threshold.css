@@ -1,0 +1,148 @@
+/* ==========================================================================
+   Threshold View (PLAN.md §2.4 A)
+   ========================================================================== */
+
+#threshold {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(11, 12, 16, 0.65);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 800ms var(--ease);
+}
+
+#threshold.is-open {
+  opacity: 1;
+}
+
+.threshold-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  max-width: 90vw;
+}
+
+#threshold-drawing {
+  width: min(640px, 86vw);
+  height: auto;
+  overflow: visible;
+}
+
+#threshold-drawing path {
+  fill: none !important;
+  stroke: var(--trace) !important;
+  stroke-width: 0.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.threshold-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--paper);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+[dir="rtl"] .threshold-title {
+  font-family: var(--font-arabic-display);
+  font-size: 28px;
+}
+
+.threshold-bottom-bar {
+  position: absolute;
+  bottom: 32px;
+  left: 32px;
+  right: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.threshold-bottom-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+}
+
+#threshold-enter-btn {
+  height: 32px;
+  padding-inline: 16px;
+  font-size: 12px;
+  border-color: var(--trace);
+  color: var(--paper);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+#threshold-enter-btn:hover {
+  background: var(--trace);
+  color: var(--ink);
+}
+
+.threshold-progress-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.threshold-progress-line {
+  height: 100%;
+  width: 0%;
+  background: var(--trace);
+  transition: width 200ms ease-out;
+}
+
+.threshold-progress-readout {
+  position: absolute;
+  bottom: 12px;
+  right: 32px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--paper-mute);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 640px) {
+  .threshold-bottom-bar {
+    bottom: 24px;
+    left: 20px;
+    right: 20px;
+    flex-direction: column-reverse;
+    gap: 16px;
+  }
+
+  .threshold-bottom-center {
+    position: static;
+    transform: none;
+  }
+
+  .threshold-bottom-left {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .threshold-progress-readout {
+    position: static;
+    align-self: flex-end;
+    margin-top: -26px;
+  }
+}

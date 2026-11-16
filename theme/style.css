@@ -1,0 +1,291 @@
+/*
+Theme Name: Al Khatib
+Theme URI: https://graysonearle.com
+Author: Grayson Earle
+Author URI: https://graysonearle.com
+Description: Al Khatib site
+Tags: justice
+Version: 2023
+Requires at least: 5.2
+Tested up to: 6.1
+Requires PHP: 7.0
+License: GNU General Public License v3 or Later
+License URI: https://www.gnu.org/licenses/gpl.html
+Text Domain: blankslate
+Update URI: false
+
+BlankSlate WordPress Theme © 2011-2023 TidyThemes
+BlankSlate is distributed under the terms of the GNU GPL
+*/
+
+@font-face {font-family: "favorit";
+  src: url("fonts/04c4a36facccf2d0906a0f1ed61036ef.eot"); /* IE9*/
+  src: url("fonts/04c4a36facccf2d0906a0f1ed61036ef.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+  url("fonts/04c4a36facccf2d0906a0f1ed61036ef.woff2") format("woff2"), /* chrome、firefox */
+  url("fonts/04c4a36facccf2d0906a0f1ed61036ef.woff") format("woff"), /* chrome、firefox */
+  url("fonts/04c4a36facccf2d0906a0f1ed61036ef.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+  url("fonts/04c4a36facccf2d0906a0f1ed61036ef.svg#Favorit Medium") format("svg"); /* iOS 4.1- */
+}
+
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline}html{scroll-behavior:smooth}body{line-height:1}a{text-decoration-skip-ink:auto}a[href^="tel"]{color:inherit;text-decoration:none}button{outline:0}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}q{display:inline;font-style:italic}q:before{content:'"';font-style:normal}q:after{content:'"';font-style:normal}textarea,input[type="text"],input[type="button"],input[type="submit"],input[type="reset"],input[type="search"],input[type="password"]{-webkit-appearance:none;appearance:none;border-radius:0}input[type="search"]{-webkit-appearance:textfield}table{border-collapse:collapse;border-spacing:0}th,td{padding:2px}big{font-size:120%}small,sup,sub{font-size:80%}sup{vertical-align:super}sub{vertical-align:sub}dd{margin-left:20px}kbd,tt{font-family:courier;font-size:12px}ins{text-decoration:underline}del,strike,s{text-decoration:line-through}dt{font-weight:bold}address,cite,var{font-style:italic}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+.sticky{}.bypostauthor{}.wp-caption{}.wp-caption-text{}.gallery-caption{}.alignright{}.alignleft{}.aligncenter{}
+.screen-reader-text{border:0;clip:rect(1px,1px,1px,1px);-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute!important;width:1px;word-wrap:normal!important;word-break:normal}
+.screen-reader-text:focus{background-color:#f7f7f7;border-radius:3px;box-shadow:0 0 2px 2px rgba(0,0,0,.6);clip:auto!important;-webkit-clip-path:none;clip-path:none;color:#007acc;display:block;font-size:14px;font-size:.875rem;font-weight:700;height:auto;right:5px;line-height:normal;padding:15px 23px 14px;text-decoration:none;top:5px;width:auto;z-index:100000}
+.skip-link{left:-9999rem;top:2.5rem;z-index:999999999;text-decoration:underline}
+.skip-link:focus{display:block;left:6px;top:7px;font-size:14px;font-weight:600;text-decoration:none;line-height:normal;padding:15px 23px 14px;z-index:100000;right:auto}
+.visually-hidden:not(:focus):not(:active), .form-allowed-tags:not(:focus):not(:active){position:absolute !important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px, 1px, 1px, 1px);white-space:nowrap}
+:root {
+	--highlight: #e26041;
+	--light: #757687;
+	--dark:#000000;
+	--theme:#394273;
+}
+
+body {
+	overflow: hidden;
+	margin: 0px;
+	font-family: 'favorit', serif;
+	font-size: 16px;
+	color: var(--dark);
+}
+
+@media screen and (min-width: 700px) {
+	body {
+		font-size: 12px;
+	}
+}
+
+@media screen and (min-width: 1200px) {
+	body {
+		font-size: 16px;
+	}
+}
+
+@media screen and (min-width: 1800px) {
+	body {
+		font-size: 25px;
+	}
+}
+
+
+
+a {
+	color: var(--theme);
+}
+
+
+p {
+	margin-bottom:1em;
+	line-height:1.5em;
+	font-size:1.15em;
+}
+
+.poem p {
+	margin:0;
+/* 	line-height:.25em; */
+}
+#mobile-popover {
+	display:none;
+	background-color:#fff;
+	position:fixed;
+	height:100%;
+	width:100%;
+	z-index:100;
+}
+#mobile-popover p, #mobile-popover a {
+	font-size:2.5em;
+}
+
+
+/* HELPERS */
+.lightshadow {
+	    text-shadow: #aaaaaa 1px 1px 3px;
+}
+.gradientme {
+	-webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 80%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 80%, transparent 100%);
+}
+.scrollme {
+	max-height:100%;
+	overflow-y:scroll;
+}
+
+.arabic, .arabic p {
+	direction: rtl;
+	font-family: 'Noto Naskh Arabic', serif;
+	font-size:1.15em;
+}
+/* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: var(--highlight) rgba(0,0,0,0);
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--highlight);
+    border-radius: 0px;
+    border: 0px none #923f3f;
+  }
+
+
+
+/* Landing Page */
+#landing {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background-image: url("assets/landing-background1080.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center center;
+}
+
+.inner-landing {
+	display: flex;
+	background-image:url(https://al-khatib-glossar.com/wp-content/themes/blankslate/assets/landing.svg);
+	background-repeat:no-repeat;
+	background-size:contain;
+	background-position: center center;
+	height:100%;
+}
+#open-map {
+    position: relative;
+	left: 76px;
+    top: 66px;
+	font-size:1.2em;
+	text-shadow: #ffffff 1px 1px 3px;
+}
+
+/* INFO OVERLAY */
+#overlay-outer {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0px;
+}
+
+#overlay-inner {
+	position: absolute;
+	top: 12.5%;
+	left: 12.5%;
+	right: 12.5%;
+	bottom: 12.5%;
+	padding: 2em 4em;
+	background-color: rgba(255, 255, 255, .95);
+	border-radius: 25px;
+
+	/* width:80%;
+	margin-left:10%;
+	height:90%;
+	margin-top:5%; */
+}
+#overlay-buffer {
+	overflow-y: auto;
+	height:100%;
+}
+
+.overlay-languages a {
+	font-family: "PT Mono", monospace;
+}
+
+.landing-languages {
+	margin-top:1em;
+	margin-bottom:2em;
+}
+.overlay-languages .active, .active-landing {
+	background-color: var(--highlight);
+	color:#fff;
+}
+
+.landing-text {
+	padding-bottom:1em;
+}
+
+#overlay-title {
+	font-size: 2em;
+	font-weight: bold;
+	font-family: "favorit";
+	margin-top:.5em;
+	margin-bottom:.25em;
+
+}
+
+#overlay-author {
+	margin-bottom: 1em;
+	color:#888888;
+}
+
+#overlay-close {
+	color:var(--theme);
+}
+#overlay-close-icon {
+	position: absolute;
+	right: 1em;
+	top: 1em;
+}
+
+#overlay-content {
+	padding: 0 4em;
+	padding-top: 2em;
+}
+
+#overlay-related {
+	margin-top:1em;
+	margin-bottom:2em;
+    color: var(--highlight);
+}
+
+#overlay-related a {
+	font-family: "PT Mono", monospace;
+	display:block;
+	color: var(--highlight);
+	margin:1em;
+}
+#overlay-related a::before {
+    content: '🔗';
+}
+
+/* Site wide */
+.vertical-center {
+	align-items: center;
+	justify-content: center;
+}
+
+.horizontal-center {
+	text-align: center;
+}
+
+.padded {
+	padding: 1.5em;
+}
+
+.padded-double {
+	padding: 3em;
+}
+
+.col50 {
+	flex: 50%;
+
+}
+
+
+
+
+.highlight {
+	background-color:var(--highlight);
+}
+
+/* RESPONSIVE VIDEO etc */
+video {
+	width:100%;
+}

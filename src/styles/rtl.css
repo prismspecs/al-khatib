@@ -1,0 +1,32 @@
+/* ==========================================================================
+   Arabic & RTL Typography (PLAN.md §2.2)
+   ========================================================================== */
+
+[dir="rtl"],
+.lang-ar,
+.arabic {
+  font-family: var(--font-arabic-reading);
+  direction: rtl;
+  text-align: right;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+[dir="rtl"] .akg-chip,
+.arabic .akg-chip {
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+[dir="rtl"] .site-wordmark {
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-size: 18px;
+}
+
+[dir="rtl"] .panel-body,
+.arabic .panel-body {
+  font-size: 1.2em;
+  line-height: 1.9;
+}

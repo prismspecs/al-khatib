@@ -25,3 +25,13 @@ dist-ssr
 
 # my stuff
 *.glb
+# Redesign (2026-11): large / sensitive files live on MEGA (/jobs/al-khatib/codebase), not in git.
+# Only the three optimized GLBs the site actually loads are committed.
+!public/map-assets/*.opt.glb
+public/map-assets/*.png
+docs/redesign/backups/
+docs/redesign/progress/
+docs/redesign/reference/
+
+# Production theme zips from tools/package-theme.sh
+blankslate-*.zip
