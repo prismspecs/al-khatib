@@ -11,7 +11,7 @@ import { showLayer, hideLayer, isLayerOpen } from './layer.js';
 const WORKSHOP_INTROS = {
     de: "Das 2017 gegründete Kollektiv Wiese (Wie es ist) مرج ist eine mehrsprachige Schreibwerkstatt, in der Literatur und Poesie übersetzt, besprochen, weitergeschrieben werden. Auf der Wiese werden verschiedene Sprachen gesprochen, vorrangig übersetzt wird momentan zwischen syrischem Arabisch und Deutsch. Die Gruppe setzt sich zusammen aus Schriftsteller*innen, Übersetzer*innen und Literaturwissenschaftler*innen verschiedenster Herkunft und ist offen für alle. Wir sind immer offen für neue Mitglieder, die mitarbeiten, eigene Texte mitbringen oder Übersetzungen anregen wollen. Seit 2021 widmet sich das Kollektiv mit den Projekten „Der unsichtbare Prozess“ und „Al-Khatib-Glossar“ Leseperformances und einer literarischen Übersetzungskritik auf Basis des Al-Khatib-Verfahrens in Koblenz. Die Wiese trifft sich immer mittwochs gegen Abend im Theater X, Berlin-Moabit und lädt unregelmäßig zu öffentlichen Veranstaltungen in die Lettrétage und anderswo.",
     en: "Founded in 2017, the collective Wiese (as it is) مرج is a multilingual writing workshop. Wiese is about literature, poetology, and the autonomy of linguistic beauty — but also about claims to social space and politics. Wiese speaks different languages, currently the focus is on translations between Syrian Arabic and German. The group is made up of writers, translators and literary scholars from various backgrounds and is open to all. Since 2021, the collective has been dedicated to reading performances and a literary translation critique based on the Al-Khatib trial in Koblenz with the projects “The Invisible Process” and “Al-Khatib Glossary”. Wiese meets every Wednesday evening at Theater X, Berlin-Moabit and irregularly holds public events at Lettrétage and elsewhere.",
-    ar: "تقوم مجموعة مرج الأدبية بترجمة الأدب والشعر منذ سنوات حيث تندمج الاعتبارات الشعرية واللغوية والسياسية بعضها ببعض. تجتمع المجموعة بانتظام في Lettrétage منذ خريف 2021، حيث تعرض نتائج من مشروع ”المحاكمة الغير مرئية“ / محاكمة الخطيب في كوبلنز. يمكن لأي شخص يرغب في المشاركة وطرح نصوصه للمناقشة التواصل معنا."
+    ar: "تقوم مجموعة مرج الأدبية بترجمة الأدب والشعر منذ سنوات حيث تندمج الاعتبارات الشعرية واللغوية والسياسية بعضها ببعض. تجتمع المجموعة بانتظام في Lettrétage منذ خريف 2021.حيث تعرض نتائج من مشروع“المحاكمة الغير مرئية“/محاكمة الخطيب في كوبلنز يمكن لأي شخص يرغب في المشاركة وطرح نصوصه للمناقشة (باللغة العربية/الإنجليزية/ الألمانية) التواصل عبر: wiesewieesist@gmx.de"
 };
 
 const COLLECTIVE_STATEMENTS = {
@@ -30,10 +30,10 @@ const COLLECTIVE_STATEMENTS = {
     en: {
         paragraphs: [
             "Al Khatib: a residential neighborhood in Damascus: a street: an intelligence department. An intelligence branch in a street in a residential neighborhood in Damascus. A residential neighborhood: an intelligence branch. A street: an intelligence branch. Al Khatib.",
-            "The literary collective Wiese (As it is) / مرج presents its work of the last two years: the AL-KHATIB-GLOSSARY. The glossary refers to the Al-Khatib trial, which recently tried two intelligence officers of the Syrian Assad regime in Koblenz under the principle of “universal jurisdiction”. It refers to a trial that does not exist as a text in this way, at least not in any comprehensive and verbatim form of documentation. Nor does it refer only to this trial, but to the violent events for which the name Al-Khatib has come to stand. The repressive, death-dealing practices that constitute Al-Khatib are, in turn, to be seen in the broader context of the Syrian revolution’s efforts that the intelligence division 251 (Al-Khatib branch) means to silence. All of this – the al-Khatib complex – is the so-called “text” that makes up the point of departure for the Wiese's glossary.",
-            "A political conflict that takes place, among other places, in language. Which words remain untranslated, untranslatable in Koblenz? Can these be (re)constructed as fragments of a language of the Syrian revolution? What if turns of phrase become threats? Can language be a form of torture? Where do German court proceedings and street scenes from Damascus blur together? How far do historical entanglements between Syrian and European intelligence agencies go? What echoes, references, contradictions arise between our Arabic, German, and interlingual transcriptions, which are always fragile and fragmentary?",
-            "The glossary experiments in multiple languages and with multimedia with these porous, tentative, and incomplete traces, extracting words and concepts from a certain legal and political order – and syntax – interrogating them differently, not least with regard to their utopian aspect. Often, this involves the intervention of literary forms into social processes, a working through of words charged with violence.",
-            "Engaging with the revolutionary events in Syria and their aftermath is an open and unfinished process, visible in many places and shapes. The glossary is one of these places, conceived as an attempt to generate new, critical publics around the Al-Khatib complex. Against the recurring rendering invisible of those affected, the glossary understands itself, among other things, as a statement against the consequential refusal of the Koblenz court to record the proceedings. We give the name Glossary to the form of this political work, because the glossary in particular allows for artistic documentation and response to a knowing that we perceive as polyphonic and as variously embodied."
+            "The literary collective Wiese (As it is) / مرج presents its work of the last two years: the AL-KHATIB-GLOSSARY. The glossary refers to the Al-Khatib trial, which recently tried two intelligence officers of the Syrian Assad regime in Koblenz under the principle of “universal jurisdiction\". It refers to a trial that does not exist as a text in this way, at least not in any comprehensive and verbatim form of documentation. Nor does it refer only to this trial, but to the violent events for which the name Al-Khatib has come to stand. The repressive, death-dealing practices that constitute Al-Khatib are, in turn, to be seen in the broader context of the Syrian revolution’s efforts that the intelligence division 251 (Al-Khatib branch) means to silence. All of this – the al-Khatib complex – is the so-called “text\" that makes up the point of departure for the Wiese's glossary.",
+            "A political conflict that takes place, among other places, in language. Which words remain untranslated, untranslatable in Koblenz? Can these be (re)constructed as fragments of a language of the Syrian revolution? What if idioms become threats? Can language be a form of torture? Where do German court proceedings and street scenes from Damascus overlap? To what extent can we trace historical entanglements between Syrian and European intelligence services? What echoes, relations, contradictions emerge among our Arabic, German and interlingual protocols, which remain approximate and incomplete?",
+            "The glossary experiments via multilingual and multimedia means with these porous, tentative and incomplete traces, detaches words and terms from a certain legal, political order – and word order –, works through them differently, not least in search for their utopian aspect. This labor often involves an intervention of literary forms into social processes, a working through of words that are fraught with violence.",
+            "The confrontation with the revolutionary events in Syria and their consequences is an open and unfinished process that is visible in many places and in many forms. The Glossary is one of these places, conceived as an attempt to generate new, critical public spheres in relation to the Al-Khatib complex. Against a second invisibilization of witnesses, survivors and otherwise afflicted, the glossary understands itself, among other things, as a statement against the consequential refusal of the Koblenz court to record the proceedings. We give the name Glossary to the form of this political work, because the glossary in particular allows for artistic documentation and response to a knowing that we perceive as polyphonic and as variously embodied."
         ],
         contributors: "Galal Alahmady, Maru Younes, Sandra Burkhardt, Carsten Jenss, Marlene Feger, Christian Filips, Kenan Khadaj, Aniol Kirberg, Miriam Rainer, Raguel Roumer, Pasqual Solaß",
         guests: "Nauras Ali, Ali Jazo, Luna Watfa, Hannah El-Hitami",
@@ -42,15 +42,15 @@ const COLLECTIVE_STATEMENTS = {
     },
     ar: {
         paragraphs: [
-            "فرع مخابرات في شارع في منطقة سكنية في دمشق .\nمنطقة سكنية: فرع مخابرات.\nشارع: فرع مخابرات .\nالخطيب.",
-            "مجموعة الترجمة مرج تعرض عملها خلال السنتين الماضيتين: معجم الخطيب. يستند المعجم على محاكمة الخطيب، التي جلبت مؤخراً اثنين من عملاء المخابras السرية التابعة لنظام الأسد السوري إلى المحكمة في كوبلنز تحت مبدأ الولاية القضائية العالمية. يشير المعجم إلى محاكمة غير موجودة كنص، على الأقل ليس بشكل كامل وغير موثقة حرفياً. كما أنه لايشير إلى المحاكمة فحسب، بل إلى الأحداث العنيفة التي يطلق عليها اسم الخطيب الآن. مرة أخرى، يجب النظر إلى الممارسات القمعية والقاتلة التي تميز الخطيب في السياق الأوسع لجهود الثورة السورية التي يتم إسكاتها في فرع المخابرات 251 (فرع الخطيب). كل هذا هو ما يُعرف بـ «النص»، الذي كُرّس له عمل مجموعة مرج في هذا المعجم.",
-            "صراع سياسي مسرحه ـ من بين أمور أخرى ـ اللغة. ماهي الكلمات التي ظلت غير مترجمة وغير قابلة للترجمة في كوبلنز؟ هل يمكن إعادة بنائها على هيئة أجزاء من لغة الثورة السورية؟ ماذا لو أصبحت التعابير الاصطلاحية في اللغة تهديداً؟ هل يمكن أن تصبح اللغة شكلاً من أشكال التعذيب؟ أين تتداخل إجراءات المحكمة الألمانية ومشاهد الشوارع في دمشق؟ إلى أي مدى تصل التشابكات التاريخية بين المخابرات السرية السورية والأوروبية؟ ما هي الأصداء الموجودة بين ملاحظاتنا العربية والألمانية والمتعددة اللغات، والتي دائماً ما تكون مجرد تقديرات تقريبية لـ (غير) المسموع (المسموح) باختفائه.",
-            "المعجم هو تجارب مع هذه الآثار الهشة والخجولة غير المكتملة في عدة لغات وباستخدام عدة وسائط، هو استخراج لكلمات ومصطلحات من نظام قانوني وسياسي معين ـ وترتيب جمل ـ يشكك فيها بشكل مختلف بحثاً عن الجانب اليوتوبي المثالي. يُفهم المعجم من بين أمور أخرى على أنه بيان ضد رفض محكمة كوبلنز توثيق المحاكمة والذي له عواقب وخيمة."
+            "فرع مخابرات في شارع في منطقة سكنية في دمشق . منطقة سكنية: فرع مخابرات. شارع: فرع مخابرات . الخطيب.",
+            "مجموعة الترجمة مرج تعرض عملها خلال السنتين الماضيتين: معجم الخطيب. يستند المعجم على محاكمة الخطيب، التي جلبت مؤخراً اثنين من عملاء المخابرات السرية التابعة لنظام الأسد السوري إلى المحكمة في كوبلنز تحت مبدأ الولاية القضائية العالمية. يشير المعجم إلى محاكمة غير موجودة كنص، على الأقل ليس بشكل كامل وغير موثقة حرفياً. كما أنه لايشير إلى المحاكمة فحسب، بل إلى الأحداث العنيفة التي يطلق عليها اسم الخطيب الآن. مرة أخرى، يجب النظر إلى الممارسات القمعية والقاتلة التي تميز الخطيب في السياق الأوسع لجهود الثورة السورية التي يتم إسكاتها في فرع المخابرات 251 (فرع الخطيب). كل هذا هو ما يُعرف ب&lt;النص&gt;، الذي كُرّس له عمل مجموعة مرج في هذا المعجم.",
+            "صراع سياسي مسرحه ـ من بين أمور أخرى ـ اللغة. ماهي الكلمات التي ظلت غير مترجمة وغير قابلة للترجمة في كوبلنز؟ هل يمكن إعادة بنائها على هيئة أجزاء من لغة الثورة السورية؟ ماذا لو أصبحت التعابير الاصطلاحية في اللغة تهديداً؟ هل يمكن أن تصبح اللغة شكلاًمن أشكال التعذيب؟ أين تتداخل إجراءات المحكمة الألمانية ومشاهد الشوارع في دمشق؟ إلى أي مدى تصل التشابكات التاريخية بين المخابرات السرية السورية والأوروبية؟ ما هي الأصداء الموجودة بين ملاحظاتنا العربية والألمانية والمتعددة اللغات. والتي دائماً ما تكون مجرد تقديرات تقريبية ل (غير) المسموع (المسموح ) باختفائه.",
+            "المعجم هو تجارب مع هذه الآثار الهشة والخجولة غير المكتملة في عدة لغات و باستخدام عدة وسائط، هو استخراج لكلمات ومصطلحات من نظام قانوني وسياسي معين ـ وترتيب جمل ـ يشكك فيها بشكل مختلف بحثاً عن الجانب اليوتوبي المثالي. يْفهم المعجم من بين أمور أخرى على أنه بيان ضد رفض محكمة كوبلنز توثيق المحاكمة والذي له عواقب وخيمة."
         ],
-        contributors: "جلال الأحمدي، مرو يونس، ساندرا بوركاردت، علي جازو، كارستن ينس، مارلينه فيغر، كريستيان فيليبس، كنان خداج، أنيول كيربيرغ، ميريام راينر، راغيل رومير، باسكال سولاس",
-        guests: "نورس علي، علي جازو، لونا وطفة، هناء الحطامي",
-        leads: "مرو يونس، ميريام راينر",
-        funder: "بدعم من صندوق المترجمين الألمان."
+        contributors: "جلال الأحمدي، مرو يونس المقبل، نورس علي، ساندرا بوركاردت، علي جازو، كارستن ينس، مارلينه فيغر، كريستيان فيليبس، كنان خداج، أنيول كيربيرغ، ميريام راينر، راغيل رومير، باسكال سولاس",
+        guests: "",
+        leads: "",
+        funder: ""
     }
 };
 
@@ -167,24 +167,28 @@ export function createAbout({ container, router, store }) {
             </div>
 
             <dl class="about-credits-grid">
-                <div class="about-credit-card">
-                    <dt class="credit-role">${t(lang, 'contributors')}</dt>
-                    <dd class="credit-people">${statementData.contributors}</dd>
-                </div>
-                <div class="about-credit-card">
-                    <dt class="credit-role">${t(lang, 'guests')}</dt>
-                    <dd class="credit-people">${statementData.guests}</dd>
-                </div>
-                <div class="about-credit-card">
-                    <dt class="credit-role">${t(lang, 'projectLeads')}</dt>
-                    <dd class="credit-people">${statementData.leads}</dd>
-                </div>
+                ${statementData.contributors ? `
+                    <div class="about-credit-card">
+                        <dt class="credit-role">${t(lang, 'contributors')}</dt>
+                        <dd class="credit-people">${statementData.contributors}</dd>
+                    </div>` : ''}
+                ${statementData.guests ? `
+                    <div class="about-credit-card">
+                        <dt class="credit-role">${t(lang, 'guests')}</dt>
+                        <dd class="credit-people">${statementData.guests}</dd>
+                    </div>` : ''}
+                ${statementData.leads ? `
+                    <div class="about-credit-card">
+                        <dt class="credit-role">${t(lang, 'projectLeads')}</dt>
+                        <dd class="credit-people">${statementData.leads}</dd>
+                    </div>` : ''}
             </dl>
 
-            <div class="about-funder-card">
-                <span class="credit-role">${t(lang, 'fundingHeading')}</span>
-                <p class="funder-text">${statementData.funder}</p>
-            </div>
+            ${statementData.funder ? `
+                <div class="about-funder-card">
+                    <span class="credit-role">${t(lang, 'fundingHeading')}</span>
+                    <p class="funder-text">${statementData.funder}</p>
+                </div>` : ''}
 
             <div class="about-contact-card">
                 <span class="credit-role">${t(lang, 'contact')}</span>
