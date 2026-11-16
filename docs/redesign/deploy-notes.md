@@ -83,6 +83,11 @@ the Local database to production (see §1).
 ### Notes
 - `theme/style.css` carries `Update URI: false`. The slug `blankslate` collides with the BlankSlate theme on
   wordpress.org; without this header WordPress offers an "update" that would replace the custom theme.
+- `plugins/akg-privacy/` is installed and active on production (upload the zipped folder via Plugins → Add New →
+  Upload). It hides `/wp/v2/users` from logged-out visitors, redirects author archives and `?author=N` to the home
+  page, points author links home, drops the users sitemap and strips `X-Powered-By`. Before it, the REST API and
+  author pages published the admin account's login-derived slug and email address. The admin display name is now
+  "Grayson Earle" for the same reason.
 - Server-side backups made on 2026-11-16 (outside `public_html`): `~/theme-backups/2026-11-16-before-redesign/`
   (old 2023 theme), `~/db-backups/` (DB dump before plugin updates), `~/plugin-backups/` (pre-update copies of
   active plugins, plus ~20 unused inactive plugins removed from the site), `~/log-archive/`.
